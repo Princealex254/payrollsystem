@@ -488,11 +488,7 @@
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         // --- AUTHENTICATION & DATA SETUP ---
-        const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
-        const allEmployees = JSON.parse(localStorage.getItem('employees')) || [];
-        
-        // Find the full employee record using the logged-in email
-        const currentEmployee = allEmployees.find(emp => emp.email.toLowerCase() === loggedInUser?.email.toLowerCase());
+        // This section is now handled by the Firebase onAuthStateChanged listener below.
         let currentEmployeeData; // Will hold the employee's data from Firestore
 
         // --- Firebase Configuration ---
