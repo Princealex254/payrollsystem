@@ -1086,6 +1086,7 @@
                 const employeeData = {
                     name: document.getElementById('full-name').value,
                     email: document.getElementById('email').value,
+                    email_lowercase: document.getElementById('email').value.toLowerCase(),
                     position: document.getElementById('position').value,
                     department: document.getElementById('department').value,
                     salary: parseFloat(document.getElementById('basic-salary').value) || 0,
@@ -1547,27 +1548,6 @@
                     if (clockIn && clockOut) {
                         const diffMs = clockOut - clockIn;
                         hoursWorked = (diffMs / (1000 * 60 * 60)).toFixed(2);
-                    }
-                    return `
-                        <tr>
-                            <td>${employee ? employee.name : 'Unknown Employee'}</td>
-                            <td>${rec.date}</td>
-                            <td>${clockIn ? clockIn.toLocaleTimeString() : '-'}</td>
-                            <td>${clockOut ? clockOut.toLocaleTimeString() : '-'}</td>
-                            <td>${hoursWorked}</td>
-                        </tr>
-                    `;
-                }).join('');
-            }
-        };
-
-        // Kick off the application
-        App.init();
-    });
-    </script>
-
-</body>
-</html>
                     }
                     return `
                         <tr>
