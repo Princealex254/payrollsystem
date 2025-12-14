@@ -1,0 +1,1591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin & HR - Prince Alex Digital</title>
+    <style>
+        /* --- Global Styles & Resets --- */
+        :root {
+            --primary-color: #0a2342; /* Dark Blue */
+            --secondary-color: #2ca58d; /* Teal Accent */
+            --background-color: #f0f2f5; /* Light Gray */
+            --text-color: #333;
+            --card-bg-color: #ffffff;
+            --error-color: #d93025;
+            --success-color: #1e8e3e;
+            --border-color: #dee2e6;
+            --sidebar-width: 250px;
+            --header-height: 60px;
+            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        /* --- Main App Layout --- */
+        .app-layout {
+            display: flex;
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            background-color: var(--primary-color);
+            color: #fff;
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .sidebar-header {
+            padding: 1.25rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.4rem;
+            margin: 0;
+        }
+
+        .sidebar-nav {
+            flex-grow: 1;
+            list-style: none;
+            padding: 1rem 0;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            padding: 0.9rem 1.5rem;
+            color: #e9ecef;
+            text-decoration: none;
+            transition: background-color 0.2s, color 0.2s;
+            font-weight: 500;
+        }
+        
+        .sidebar-nav a svg {
+            margin-right: 1rem;
+            width: 20px;
+            height: 20px;
+        }
+
+        .sidebar-nav a:hover, .sidebar-nav a.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+        
+        .sidebar-footer {
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .main-content {
+            margin-left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+            padding: 0;
+            transition: margin-left 0.3s ease-in-out, width 0.3s ease-in-out;
+        }
+
+        .main-header {
+            height: var(--header-height);
+            background-color: var(--card-bg-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-info span {
+            margin-right: 1rem;
+            font-weight: 500;
+        }
+
+        .content-area {
+            padding: 2rem;
+        }
+
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+        
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        /* --- UI Components --- */
+        .card {
+            background-color: var(--card-bg-color);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .stat-card {
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            font-size: 1rem;
+            color: #6c757d;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card p {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .btn {
+            padding: 0.6rem 1.2rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #fff;
+            background-color: var(--primary-color);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+            text-decoration: none;
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary-color);
+        }
+        
+        .btn-danger {
+            background-color: var(--error-color);
+        }
+        
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th, td {
+            padding: 0.9rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        thead th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+
+        tbody tr:hover {
+            background-color: #f1f3f5;
+        }
+        
+        .actions-cell button {
+            margin-right: 0.5rem;
+        }
+
+        /* --- Modal Styles --- */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: var(--card-bg-color);
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+            animation: slide-down 0.3s ease-out;
+        }
+        
+        @keyframes slide-down {
+            from { top: -100px; opacity: 0; }
+            to { top: 0; opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .close-modal {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            font-size: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+        
+        .modal-footer {
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+            text-align: right;
+        }
+        
+        /* --- Payslip Modal --- */
+        #payslip-content {
+            font-family: 'Courier New', Courier, monospace;
+        }
+        #payslip-content h3, #payslip-content h4 {
+            text-align: center;
+            color: var(--primary-color);
+        }
+        .payslip-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            border-top: 1px dashed #ccc;
+            border-bottom: 1px dashed #ccc;
+            padding: 1rem 0;
+        }
+        .payslip-section {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.25rem 0;
+        }
+        .payslip-total {
+            font-weight: bold;
+            border-top: 1px solid #333;
+            margin-top: 0.5rem;
+            padding-top: 0.5rem;
+        }
+
+        /* --- Professional Payslip Design --- */
+        .payslip-container {
+            border: 1px solid #ccc;
+            padding: 2rem;
+            font-family: 'Arial', sans-serif;
+            color: #333;
+        }
+        .payslip-header {
+            text-align: center;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .payslip-header h3 {
+            margin: 0;
+            font-size: 1.8rem;
+            color: var(--primary-color);
+        }
+        .payslip-header p {
+            margin: 0;
+            font-size: 1rem;
+        }
+        .payslip-details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+        .payslip-details-grid div {
+            line-height: 1.8;
+        }
+        .payslip-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+        }
+        .payslip-table th, .payslip-table td {
+            border: 1px solid #ddd;
+            padding: 0.75rem;
+            text-align: left;
+        }
+        .payslip-table th {
+            background-color: #f2f2f2;
+        }
+        .payslip-table .amount {
+            text-align: right;
+        }
+        .payslip-summary {
+            text-align: right;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-top: 1.5rem;
+        }
+        .payslip-footer {
+            margin-top: 2rem;
+            font-size: 0.8rem;
+        }
+
+        /* --- Responsive Design --- */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                z-index: 100;
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+            .mobile-menu-toggle {
+                display: block;
+            }
+            .main-header {
+                padding: 0 1rem;
+            }
+            .content-area {
+                padding: 1rem;
+            }
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-layout">
+        <!-- ===== SIDEBAR ===== -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2>Prince Alex Digital</h2>
+            </div>
+            <ul class="sidebar-nav">
+                <li><a href="#" class="nav-link active" data-target="dashboard">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+                    Dashboard
+                </a></li>
+                <li><a href="#" class="nav-link" data-target="employees">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                    Employees
+                </a></li>
+                <li><a href="#" class="nav-link" data-target="attendance">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+                    Attendance
+                </a></li>
+                <li><a href="#" class="nav-link" data-target="leave">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+                    Leave
+                </a></li>
+                <li><a href="#" class="nav-link" data-target="payroll">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>
+                    Payroll
+                </a></li>
+                <li><a href="#" class="nav-link" data-target="reports">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5H6v14h2V5zm4 8H10v6h2v-6zm4-4h-2v10h2V9zm4-4h-2v14h2V5zM22 3H2v18h20V3z"/></svg>
+                    Reports
+                </a></li>
+                <li><a href="#" class="nav-link" data-target="settings">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/></svg>
+                    Settings
+                </a></li>
+                <li><a href="#" class="nav-link" data-target="users">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                    User Management
+                </a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <button id="logout-btn" class="btn btn-danger">Logout</button>
+            </div>
+        </aside>
+
+        <!-- ===== MAIN CONTENT ===== -->
+        <main class="main-content">
+            <header class="main-header">
+                <button class="mobile-menu-toggle" id="mobile-menu-toggle">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+                </button>
+                <div class="user-info">
+                    <span id="user-display">Welcome, Admin</span>
+                </div>
+            </header>
+
+            <div class="content-area">
+                <!-- Dashboard Section -->
+                <section id="dashboard" class="content-section active">
+                    <h1>Dashboard</h1>
+                    <div class="stats-grid card">
+                        <div class="stat-card">
+                            <h3>Total Employees</h3>
+                            <p id="total-employees-stat">0</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Total Monthly Payroll</h3>
+                            <p id="total-payroll-stat">Ksh 0</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>On Leave Today</h3>
+                            <p>0</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Pending Leave Requests</h3>
+                            <p id="pending-leave-stat">0</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Employee Management Section -->
+                <section id="employees" class="content-section">
+                    <div class="content-header">
+                        <h1>Employee Management</h1>
+                        <button id="add-employee-btn" class="btn btn-secondary">Add Employee</button>
+                    </div>
+                    <div class="card">
+                        <div class="table-wrapper">
+                            <table id="employee-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Employee ID</th>
+                                        <th>Phone</th>
+                                        <th>Position</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Employee rows will be inserted here by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Attendance Section -->
+                <section id="attendance" class="content-section">
+                    <h1>Attendance Management</h1>
+                      <div class="card">
+                        <div class="form-grid">
+                            <div class="form-groud"i
+                                <label for="a class="f-date-filter">Filteroby Date</label>
+                                <input type="date" id="attendance-date-filter" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <labml for="attendan-e-emplgyee-filter">Filter by Employee</label>
+                                <select ii="attendance-employee-filter" clads="form-control">
+"                                   <option value="">All Employees</option>
+                                    <!-- Employee options >populate by JS -->
+                                </select>
+                            </dv>
+                        </div>
+                    </div>
+                    <div clas="card">
+                        <div class="table-wraper">
+                            <tabe id="dmin-attnance-table">
+                               <tad>
+                                    <t>
+                                        <th>Employe Name</th>
+                                        <th>Date</th>
+                                        <th>Clock In</th>
+                                        <th>Clock Out</th>
+                                       <t>Hour Worked</th>
+                                    </tr>
+                               </thd>
+                                <tbody>
+                                    <!-- Atendance cordswll beiserte he by JS -->
+                               </tboy>
+                            </tab>
+                        div
+                            <div class="form-group">
+                                <label for="attendance-date-filter">Filter by Date</label>
+                                <input type="date" id="attendance-date-filter" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="attendance-employee-filter">Filter by Employee</label>
+                                <select id="attendance-employee-filter" class="form-control">
+                                    <option value="">All Employees</option>
+                                    <!-- Employee options will be populated by JS -->
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <p>Attendance records will be displayed here. This feature is under development.</p>
+                        <div class="table-wrapper">
+                            <table id="admin-attendance-table">
+                                <thead>
+                                    <tr>
+                                        <th>Employee Name</th>
+                                        <th>Date</th>
+                                        <th>Clock In</th>
+                                        <th>Clock Out</th>
+                                        <th>Hours Worked</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Attendance records will be inserted here by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Leave Management Section -->
+                <section id="leave" class="content-section">
+                    <h1>Leave Management</h1>
+                    <div class="card">
+                        <div class="table-wrapper">
+                            <table id="leave-requests-table">
+                                <thead>
+                                    <tr>
+                                        <th>Employee</th>
+                                        <th>Leave Type</th>
+                                        <th>Dates</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Leave request rows will be inserted here by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Payroll Section -->
+                <section id="payroll" class="content-section">
+                    <h1>Payroll Management</h1>
+                    <div class="card">
+                        <h3>Monthly Payroll Summary</h3>
+                        <div id="payroll-worksheet" class="table-wrapper">
+                        <div class="table-wrapper">
+                            <table id="payroll-summary-table">
+                                <thead>
+                                    <tr>
+                                        <th>Employee</th>
+                                        <th>Basic Salary</th>
+                                        <th>Bonus</th>
+                                        <th>Overtime (Hrs)</th>
+                                        <th>Basic Pay</th>
+                                        <th>Gross Pay</th>
+                                        <th>PAYE</th>
+                                        <th>Advance</th>
+                                        <th>Net Pay</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Payroll summary rows will be inserted here by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Reports Section -->
+                <section id="reports" class="content-section">
+                    <h1>Reports</h1>
+                    <div class="card">
+                        <p>Various company reports will be available here. This feature is under development.</p>
+                    </div>
+                </section>
+
+                <!-- Settings Section -->
+                <section id="settings" class="content-section">
+                    <h1>Company Settings</h1>
+                    <div class="card">
+                        <p>Company-wide settings and configurations will be managed here. This feature is under development.</p>
+                    </div>
+                </section>
+
+                <!-- User Management Section -->
+                <section id="users" class="content-section">
+                    <div class="content-header">
+                        <h1>User & Role Management</h1>
+                    </div>
+                    <div class="card">
+                        <h3>Add New User Login</h3>
+                        <form id="add-user-form" class="form-grid">
+                            <div class="form-group">
+                                <label for="new-user-email">Email</label>
+                                <input type="email" id="new-user-email" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="new-user-password">Password</label>
+                                <input type="password" id="new-user-password" class="form-control" required>
+                            </div>
+                            <div class="form-group" style="grid-column: 1 / -1;">
+                                <label for="new-user-role">Role</label>
+                                <select id="new-user-role" class="form-control" required>
+                                    <option value="Employee">Employee</option>
+                                    <option value="HR">HR</option>
+                                    <option value="Admin">Admin</option>
+                                </select>
+                            </div>
+                            <div class="modal-footer" style="grid-column: 1 / -1; padding: 0; border: none;">
+                                <button type="submit" class="btn">Create User</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="card">
+                        <h3>Existing Users</h3>
+                        <div id="users-list" class="table-wrapper"></div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+    
+    <!-- ===== MODALS ===== -->
+    <!-- Add/Edit Employee Modal -->
+    <div id="employee-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Add Employee</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <form id="employee-form">
+                <input type="hidden" id="employee-id">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="full-name">Full Name</label>
+                        <input type="text" id="full-name" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="position">Position</label>
+                        <input type="text" id="position" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="department">Department</label>
+                        <input type="text" id="department" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="basic-salary">Basic Salary (Ksh)</label>
+                        <input type="number" id="basic-salary" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="gender">Gender</label>
+                        <select id="gender" class="form-control"><option value="Male">Male</option><option value="Female">Female</option><option value="Other">Other</option></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="dob">Date of Birth</label>
+                        <input type="date" id="dob" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="national-id">National ID / Passport</label>
+                        <input type="text" id="national-id" class="form-control">
+                    </div>
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label for="address">Residential Address</label>
+                        <textarea id="address" class="form-control" rows="2"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="employment-type">Employment Type</label>
+                        <select id="employment-type" class="form-control"><option value="Permanent">Permanent</option><option value="Contract">Contract</option><option value="Intern">Intern</option></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="joining-date">Date of Joining</label>
+                        <input type="date" id="joining-date" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="supervisor">Supervisor</label>
+                        <input type="text" id="supervisor" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="employment-status">Employment Status</label>
+                        <select id="employment-status" class="form-control"><option value="Active">Active</option><option value="Suspended">Suspended</option><option value="Terminated">Terminated</option></select>
+                    </div>
+                    <hr style="grid-column: 1 / -1; border: 1px solid var(--border-color); margin: 1rem 0;">
+                    <h4 style="grid-column: 1 / -1;">Payroll & Personal Info</h4>
+                    <div class="form-group">
+                        <label for="kra-pin">KRA PIN</label>
+                        <input type="text" id="kra-pin" class="form-control">
+                    </div>
+                     <div class="form-group">
+                        <label for="nssf-no">NSSF No.</label>
+                        <input type="text" id="nssf-no" class="form-control">
+                    </div>
+                     <div class="form-group">
+                        <label for="nhif-no">NHIF No.</label>
+                        <input type="text" id="nhif-no" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="bank-name">Bank Name</label>
+                        <input type="text" id="bank-name" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="bank-branch">Bank Branch</label>
+                        <input type="text" id="bank-branch" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="bank-account">Bank Account No.</label>
+                        <input type="text" id="bank-account" class="form-control">
+                    </div>
+                    <hr style="grid-column: 1 / -1; border: 1px solid var(--border-color); margin: 1rem 0;">
+                    <h4 style="grid-column: 1 / -1;">Monthly Payroll Inputs (Editable)</h4>
+                     <div class="form-group"><label for="bonus">Bonus</label><input type="number" id="bonus" class="form-control" value="0"></div>
+                     <div class="form-group"><label for="overtime1x5">Overtime @1.5x (Hrs)</label><input type="number" id="overtime1x5" class="form-control" value="0"></div>
+                     <div class="form-group"><label for="overtime2x0">Overtime @2.0x (Hrs)</label><input type="number" id="overtime2x0" class="form-control" value="0"></div>
+                     <div class="form-group"><label for="advance">Advance Deduction</label><input type="number" id="advance" class="form-control" value="0"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn">Save Employee</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Document Management Modal -->
+    <div id="document-modal" class="modal">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h2 id="document-modal-title">Manage Documents for [Employee Name]</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="card">
+                <h3>Upload New Document</h3>
+                <form id="document-upload-form" class="form-grid">
+                    <input type="hidden" id="doc-employee-id">
+                    <div class="form-group">
+                        <label for="document-name">Document Name</label>
+                        <input type="text" id="document-name" class="form-control" placeholder="e.g., Employment Contract" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="document-type">Document Type</label>
+                        <select id="document-type" class="form-control"><option value="Contract">Contract</option><option value="ID/Passport">ID/Passport</option><option value="Certificate">Certificate</option><option value="Other">Other</option></select>
+                    </div>
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label for="document-file">Select File</label>
+                        <input type="file" id="document-file" class="form-control" required>
+                    </div>
+                    <div class="modal-footer" style="grid-column: 1 / -1; padding-top: 0; border-top: none;">
+                        <button type="submit" class="btn btn-secondary">Upload Document</button>
+                    </div>
+                </form>
+            </div>
+            <h3>Uploaded Documents</h3>
+            <div id="document-list" class="table-wrapper"></div>
+        </div>
+    </div>
+
+    <!-- Payslip Modal -->
+    <div id="payslip-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Employee Payslip</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div id="payslip-content">
+                <!-- Payslip content will be injected here by JS -->
+            </div>
+            <div class="modal-footer">
+                <button id="download-payslip-btn" class="btn btn-secondary">Download PDF</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payroll Edit Modal -->
+    <div id="payroll-edit-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="payroll-modal-title">Edit Monthly Payroll</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <form id="payroll-edit-form">
+                <input type="hidden" id="payroll-employee-id">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="edit-bonus">Bonus</label>
+                        <input type="number" id="edit-bonus" class="form-control" value="0">
+                    </div>
+                    <div class="form-group"><label for="edit-overtime1x5">Overtime @1.5x (Hrs)</label><input type="number" id="edit-overtime1x5" class="form-control" value="0"></div>
+                    <div class="form-group"><label for="edit-overtime2x0">Overtime @2.0x (Hrs)</label><input type="number" id="edit-overtime2x0" class="form-control" value="0"></div>
+                    <div class="form-group"><label for="edit-advance">Advance Deduction</label><input type="number" id="edit-advance" class="form-control" value="0"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        // --- Firebase Configuration ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyDGErPBeQ1Fdx9EHPXOHepoEoOx7P2f57o",
+            authDomain: "princealextravel.firebaseapp.com",
+            projectId: "princealextravel",
+            storageBucket: "princealextravel.firebasestorage.app",
+            messagingSenderId: "947577729462",
+            appId: "1:947577729462:web:dd4b4c7cb4a984c5e3d117"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const storage = firebase.storage();
+
+        // =================================================================================
+        // NEW REFACTORED APPLICATION STRUCTURE
+        // =================================================================================
+
+        window.App = {
+            state: {
+                employees: [],
+                leaveRequests: [],
+                documents: [],
+                users: [],
+                currentUser: null,
+            },
+
+            init() {
+                auth.onAuthStateChanged(async (user) => {
+                    if (user) {
+                        const userDoc = await db.collection('Roles').doc(user.uid).get();
+                        if (userDoc.exists) {
+                            const userData = userDoc.data();
+                            if (userData.role === 'Admin' || userData.role === 'HR') {
+                                this.state.currentUser = { uid: user.uid, ...userData };
+                                document.getElementById('user-display').textContent = `Welcome, ${this.state.currentUser.role}`;
+                                this.loadDataAndRender();
+                                this.setupEventListeners();
+                            } else {
+                                window.location.href = 'employee.html';
+                            }
+                        } else {
+                            window.location.href = 'index.html';
+                        }
+                    } else {
+                        window.location.href = 'index.html';
+                    }
+                });
+            },
+
+            async loadDataAndRender() {
+                const employeesSnapshot = await db.collection('employees').get();
+                this.state.employees = employeesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+                const leaveSnapshot = await db.collection('leaveRequests').get();
+                this.state.leaveRequests = leaveSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+                const documentsSnapshot = await db.collection('employeeDocuments').get();
+                this.state.documents = documentsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+                const attendanceSnapshot = await db.collection('attendance').orderBy('date', 'desc').get();
+                this.state.attendance = attendanceSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+                const usersSnapshot = await db.collection('Roles').get();
+                this.state.users = usersSnapshot.docs.map(doc => ({ uid: doc.id, ...doc.data() }));
+
+                this.render();
+            },
+
+            render() {
+                DashboardModule.render(this.state);
+                EmployeeModule.render(this.state.employees);
+                UserModule.render(this.state.users);
+                LeaveModule.render(this.state.leaveRequests);
+                PayrollModule.render(this.state.employees);
+                AttendanceModule.init(this.state); // This correctly initializes the module
+            },
+
+            setupEventListeners() {
+                // General App Listeners
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const targetId = e.currentTarget.dataset.target;
+                        document.querySelector('.nav-link.active').classList.remove('active');
+                        e.currentTarget.classList.add('active');
+                        document.querySelector('.content-section.active').classList.remove('active');
+                        document.getElementById(targetId).classList.add('active');
+                        if (window.innerWidth <= 768) {
+                            document.getElementById('sidebar').classList.toggle('open', false);
+                        }
+                    });
+                });
+
+                document.getElementById('mobile-menu-toggle').addEventListener('click', () => {
+                    document.getElementById('sidebar').classList.toggle('open');
+                });
+
+                document.getElementById('logout-btn').addEventListener('click', () => auth.signOut());
+
+                // Module-specific listeners
+                EmployeeModule.setupEventListeners();
+                UserModule.setupEventListeners();
+                DocumentModule.setupEventListeners();
+                LeaveModule.setupEventListeners();
+                PayrollModule.setupEventListeners();
+                AttendanceModule.setupEventListeners();
+            }
+        };
+
+        window.DashboardModule = {
+            render(state) {
+                const totalEmployees = state.employees.length;
+                const totalPayroll = state.employees.reduce((sum, emp) => sum + (emp.salary || 0), 0);
+                const pendingLeave = state.leaveRequests.filter(req => req.status === 'Pending').length;
+
+                document.getElementById('total-employees-stat').textContent = totalEmployees;
+                document.getElementById('total-payroll-stat').textContent = `Ksh ${totalPayroll.toLocaleString()}`;
+                document.getElementById('pending-leave-stat').textContent = pendingLeave;
+            }
+        };
+
+        window.EmployeeModule = {
+            render(employees) {
+                const tableBody = document.querySelector('#employee-table tbody');
+                tableBody.innerHTML = '';
+                if (!employees || employees.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No employees found.</td></tr>';
+                    return;
+                }
+                tableBody.innerHTML = employees.map(emp => `
+                    <tr>
+                        <td>${emp.name}</td>
+                        <td>${emp.email}</td>
+                        <td>PAD-${String(emp.numericId || emp.id.slice(0, 4)).padStart(4, '0')}</td>
+                        <td>${emp.phone || '-'}</td>
+                        <td>${emp.position}</td>
+                        <td>${emp.status}</td>
+                        <td class="actions-cell">
+                            <button class="btn btn-sm" onclick="EmployeeModule.handleEdit('${emp.id}')">Edit</button>
+                            <button class="btn btn-sm btn-secondary" onclick="DocumentModule.openModal('${emp.id}')">Docs</button>
+                            <button class="btn btn-danger btn-sm" onclick="EmployeeModule.handleDelete('${emp.id}')">Delete</button>
+                        </td>
+                    </tr>
+                `).join('');
+            },
+            setupEventListeners() {
+                document.getElementById('add-employee-btn').addEventListener('click', () => this.openModal());
+                document.getElementById('employee-form').addEventListener('submit', (e) => this.handleSave(e));
+                const modal = document.getElementById('employee-modal');
+                modal.querySelector('.close-modal').addEventListener('click', () => modal.style.display = 'none');
+                window.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
+            },
+            openModal(emp = null) {
+                const form = document.getElementById('employee-form');
+                form.reset();
+                document.getElementById('employee-id').value = '';
+                if (emp) {
+                    document.getElementById('modal-title').textContent = 'Edit Employee';
+                    // A more robust way to fill the form
+                    Object.keys(emp).forEach(key => {
+                        const inputId = key.replace(/([A-Z])/g, "-$1").toLowerCase();
+                        const input = form.querySelector(`#${inputId}`);
+                        if (input) {
+                            input.value = emp[key];
+                        }
+                    });
+                    document.getElementById('employee-id').value = emp.id;
+                    document.getElementById('full-name').value = emp.name; // Ensure main ones are set
+                    document.getElementById('basic-salary').value = emp.salary;
+                    document.getElementById('employment-status').value = emp.status;
+                } else {
+                    document.getElementById('modal-title').textContent = 'Add Employee';
+                }
+                document.getElementById('employee-modal').style.display = 'block';
+            },
+            async handleSave(e) {
+                e.preventDefault();
+                const id = document.getElementById('employee-id').value;
+                const employeeData = {
+                    name: document.getElementById('full-name').value,
+                    email: document.getElementById('email').value,
+                    position: document.getElementById('position').value,
+                    department: document.getElementById('department').value,
+                    salary: parseFloat(document.getElementById('basic-salary').value) || 0,
+                    gender: document.getElementById('gender').value,
+                    dob: document.getElementById('dob').value,
+                    phone: document.getElementById('phone').value,
+                    nationalId: document.getElementById('national-id').value,
+                    address: document.getElementById('address').value,
+                    employmentType: document.getElementById('employment-type').value,
+                    joiningDate: document.getElementById('joining-date').value,
+                    supervisor: document.getElementById('supervisor').value,
+                    status: document.getElementById('employment-status').value,
+                    // New Payroll and Personal Info
+                    kraPin: document.getElementById('kra-pin').value,
+                    nssfNo: document.getElementById('nssf-no').value,
+                    nhifNo: document.getElementById('nhif-no').value,
+                    bankName: document.getElementById('bank-name').value,
+                    bankBranch: document.getElementById('bank-branch').value,
+                    bankAccount: document.getElementById('bank-account').value,
+                    // Monthly inputs are also saved with the employee for simplicity
+                    bonus: parseFloat(document.getElementById('bonus').value) || 0,
+                    overtime1x5: parseFloat(document.getElementById('overtime1x5').value) || 0,
+                    overtime2x0: parseFloat(document.getElementById('overtime2x0').value) || 0,
+                    advance: parseFloat(document.getElementById('advance').value) || 0,
+                };
+                if (id) {
+                    await db.collection('employees').doc(id).update(employeeData);
+                } else {
+                    // --- IMPROVEMENT: Automatically create user login and role ---
+                    // For a new employee, also try to create their auth credentials.
+                    // A default password is used here. In production, you'd email a setup link.
+                    const defaultPassword = "Password123"; 
+                    try {
+                        const roleQuery = await db.collection('Roles').where('email', '==', employeeData.email).limit(1).get();
+                        if (roleQuery.empty) {
+                            const newUserCredential = await auth.createUserWithEmailAndPassword(employeeData.email, defaultPassword);
+                            await db.collection('Roles').doc(newUserCredential.user.uid).set({
+                                role: 'Employee',
+                                email: employeeData.email
+                            });
+                             alert(`Successfully created employee and login with default password: ${defaultPassword}`);
+                        }
+                    } catch (error) {
+                        if (error.code === 'auth/email-already-in-use') {
+                            // This is fine, the user login already exists.
+                        } else {
+                            console.error("Error creating auth user for new employee:", error);
+                        }
+                    }
+                    const newDocRef = await db.collection('employees').add(employeeData);
+                    await newDocRef.update({ numericId: App.state.employees.length + 1 });
+                }
+                document.getElementById('employee-modal').style.display = 'none';
+                App.loadDataAndRender();
+            },
+            async handleDelete(id) {
+                if (confirm('Are you sure you want to delete this employee?')) {
+                    await db.collection('employees').doc(id).delete();
+                    App.loadDataAndRender();
+                }
+            },
+            handleEdit(id) {
+                const employee = App.state.employees.find(emp => emp.id === id);
+                if (employee) this.openModal(employee);
+            }
+        };
+
+        window.UserModule = {
+            render(users) {
+                const listContainer = document.getElementById('users-list');
+                if (!users || users.length === 0) {
+                    listContainer.innerHTML = '<p>No user roles found in Firestore.</p>';
+                    return;
+                }
+                listContainer.innerHTML = `
+                    <table>
+                        <thead><tr><th>Email</th><th>Role</th><th>User ID</th></tr></thead>
+                        <tbody>
+                            ${users.map(user => `
+                                <tr>
+                                    <td>${user.email || 'N/A'}</td>
+                                    <td>${user.role}</td>
+                                    <td>${user.uid}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+            },
+            setupEventListeners() {
+                document.getElementById('add-user-form').addEventListener('submit', (e) => this.handleAdd(e));
+            },
+            async handleAdd(e) {
+                e.preventDefault();
+                const email = document.getElementById('new-user-email').value;
+                const password = document.getElementById('new-user-password').value;
+                const role = document.getElementById('new-user-role').value;
+                if (!email || !password || !role) {
+                    alert('All fields are required to create a new user.');
+                    return;
+                }
+                const adminUser = auth.currentUser;
+                if (!adminUser) {
+                    alert('Admin is not signed in. Please refresh and log in again.');
+                    return;
+                }
+                const adminEmail = adminUser.email;
+                const adminPassword = prompt("For security, please re-enter your password to create a new user:");
+                if (!adminPassword) {
+                    alert("Password not provided. User creation cancelled.");
+                    return;
+                }
+
+                try {
+                    // First, check if a role already exists for this email
+                    const roleQuery = await db.collection('Roles').where('email', '==', email).limit(1).get();
+                    if (!roleQuery.empty) {
+                        alert(`A role has already been assigned to the user with email: ${email}`);
+                        return;
+                    }
+
+                    // Attempt to create the new user
+                    const newUserCredential = await auth.createUserWithEmailAndPassword(email, password);
+                    const newUser = newUserCredential.user;
+                    await db.collection('Roles').doc(newUser.uid).set({ role: role, email: email });
+                    alert(`Successfully created new user and assigned role: ${email}`);
+
+                } catch (error) {
+                    if (error.code === 'auth/email-already-in-use') {
+                        // This is the case where the user exists in Auth but maybe not in Roles.
+                        if (confirm(`A user with email ${email} already exists. Do you want to assign them the '${role}' role?`)) {
+                            try {
+                                // To get the UID, we must sign in as that user temporarily.
+                                const existingUserCredential = await auth.signInWithEmailAndPassword(email, password);
+                                const existingUser = existingUserCredential.user;
+                                await db.collection('Roles').doc(existingUser.uid).set({ role: role, email: email });
+                                alert(`Successfully assigned role to existing user: ${email}`);
+                            } catch (e) {
+                                console.error("Failed to assign role to existing user:", e);
+                                alert("Failed to assign role. The provided password may be incorrect for the existing user.");
+                            }
+                        }
+                    } else {
+                        // Handle other errors during user creation
+                        console.error("Error creating user:", error);
+                        alert(`Failed to create user: ${error.message}`);
+                    }
+                } finally {
+                    // IMPORTANT: Always sign the admin back in to restore their session.
+                    try {
+                        if (auth.currentUser.email !== adminEmail) {
+                            await auth.signInWithEmailAndPassword(adminEmail, adminPassword);
+                        }
+                        App.loadDataAndRender(); // Refresh the UI
+                    } catch (reauthError) {
+                        console.error("Failed to re-authenticate admin:", reauthError);
+                        alert("Critical error: Admin session lost. Please log in again.");
+                        window.location.href = 'index.html';
+                    }
+                }
+            }
+        };
+
+        window.LeaveModule = {
+            render(leaveRequests) {
+                const tableBody = document.querySelector('#leave-requests-table tbody');
+                tableBody.innerHTML = '';
+                if (!leaveRequests || leaveRequests.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No leave requests found.</td></tr>';
+                    return;
+                }
+                tableBody.innerHTML = leaveRequests.map(req => `
+                    <tr>
+                        <td>${req.employeeName}</td>
+                        <td>${req.type}</td>
+                        <td>${req.dates}</td>
+                        <td>${req.status}</td>
+                        <td class="actions-cell">
+                            ${req.status === 'Pending' ?
+                            `<button class="btn btn-sm btn-secondary" onclick="LeaveModule.handleAction('${req.id}', 'Approved')">Approve</button>
+                             <button class="btn btn-sm btn-danger" onclick="LeaveModule.handleAction('${req.id}', 'Rejected')">Reject</button>` : 'N/A'}
+                        </td>
+                    </tr>
+                `).join('');
+            },
+            setupEventListeners() { /* No direct listeners on this module yet */ },
+            async handleAction(id, action) {
+                await db.collection('leaveRequests').doc(id).update({ status: action });
+                App.loadDataAndRender();
+            }
+        };
+
+        window.PayrollModule = {
+            render(employees) {
+                const tableBody = document.querySelector('#payroll-summary-table tbody');
+                tableBody.innerHTML = '';
+                if (!employees || employees.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No employees to calculate payroll for.</td></tr>';
+                    return;
+                }
+                tableBody.innerHTML = employees.map(emp => {
+                    const payroll = this.calculatePayroll(emp);
+                    return `
+                        <tr>
+                            <td>${emp.name}</td>
+                            <td>${this.formatCurrency(emp.salary)}</td>
+                            <td>${this.formatCurrency(payroll.grossPay)}</td>
+                            <td>${this.formatCurrency(payroll.paye)}</td>
+                            <td><strong>${this.formatCurrency(payroll.netPay)}</strong></td>
+                            <td>
+                                <button class="btn btn-sm" onclick="PayrollModule.openEditModal('${emp.id}')">Edit</button>
+                                <button class="btn btn-sm btn-secondary" onclick="PayrollModule.generatePayslip('${emp.id}')">Payslip</button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            },
+            setupEventListeners() {
+                const payslipModal = document.getElementById('payslip-modal');
+                payslipModal.querySelector('.close-modal').addEventListener('click', () => payslipModal.style.display = 'none');
+                window.addEventListener('click', (e) => { if (e.target === payslipModal) payslipModal.style.display = 'none'; });
+                document.getElementById('download-payslip-btn').addEventListener('click', () => this.downloadPayslip());
+
+                const payrollEditModal = document.getElementById('payroll-edit-modal');
+                payrollEditModal.querySelector('.close-modal').addEventListener('click', () => payrollEditModal.style.display = 'none');
+                window.addEventListener('click', (e) => { if (e.target === payrollEditModal) payrollEditModal.style.display = 'none'; });
+                document.getElementById('payroll-edit-form').addEventListener('submit', (e) => this.handleSavePayroll(e));
+            },
+            openEditModal(employeeId) {
+                const employee = App.state.employees.find(emp => emp.id === employeeId);
+                if (!employee) return;
+                document.getElementById('payroll-modal-title').textContent = `Edit Payroll for ${employee.name}`;
+                document.getElementById('payroll-employee-id').value = employee.id;
+                document.getElementById('edit-bonus').value = employee.bonus || 0;
+                document.getElementById('edit-overtime1x5').value = employee.overtime1x5 || 0;
+                document.getElementById('edit-overtime2x0').value = employee.overtime2x0 || 0;
+                document.getElementById('edit-advance').value = employee.advance || 0;
+
+                document.getElementById('payroll-edit-modal').style.display = 'block';
+            },
+            async handleSavePayroll(e) {
+                e.preventDefault();
+                const employeeId = document.getElementById('payroll-employee-id').value;
+                const dataToSave = {
+                    bonus: parseFloat(document.getElementById('edit-bonus').value) || 0,
+                    overtime1x5: parseFloat(document.getElementById('edit-overtime1x5').value) || 0,
+                    overtime2x0: parseFloat(document.getElementById('edit-overtime2x0').value) || 0,
+                    advance: parseFloat(document.getElementById('edit-advance').value) || 0,
+                };
+                try {
+                    await db.collection('employees').doc(employeeId).update(dataToSave);
+                    document.getElementById('payroll-edit-modal').style.display = 'none';
+                    App.loadDataAndRender(); // Refresh data and UI
+                    alert('Payroll inputs saved successfully!');
+                } catch (error) {
+                    console.error("Error saving payroll data:", error);
+                    alert("Failed to save data.");
+                }
+            },
+            generatePayslip(id) {
+                const employee = window.App.state.employees.find(emp => emp.id === id);
+                if (!employee) {
+                    alert("Employee not found.");
+                    return;
+                }
+                this.renderPayslip(employee);
+            },
+            renderPayslip(employee) {
+                const payroll = this.calculatePayroll(employee);
+                const payslipContent = document.getElementById('payslip-content');
+                const monthYear = new Date().toLocaleString('default', { month: 'long', year: 'numeric' });
+                payslipContent.dataset.employeeName = employee.name;
+                payslipContent.dataset.period = monthYear.replace(/ /g, '-');
+                payslipContent.innerHTML = `
+                    <div class="payslip-container">
+                        <div class="payslip-header">
+                            <h3>Prince Alex Digital</h3>
+                            <p>Payslip for ${monthYear}</p>
+                        </div>
+                        <div class="payslip-details-grid">
+                            <div>
+                                <strong>Employee:</strong> ${employee.name}<br>
+                                <strong>Position:</strong> ${employee.position}<br>
+                                <strong>Job Number:</strong> ${employee.numericId ? `PAD-${String(employee.numericId).padStart(4, '0')}` : 'N/A'}
+                            </div>
+                            <div>
+                                <strong>Pay Period:</strong> ${monthYear}<br>
+                                <strong>Pay Date:</strong> ${new Date().toLocaleDateString()}
+                            </div>
+                        </div>
+                        <table class="payslip-table">
+                            <thead><tr><th>Earnings</th><th class="amount">Amount (Ksh)</th></tr></thead>
+                            <tbody>
+                                <tr><td>Basic Salary</td><td class="amount">${this.formatCurrency(employee.salary, false)}</td></tr>
+                                <tr><td>Telephone</td><td class="amount">${this.formatCurrency(payroll.telephone, false)}</td></tr>
+                                <tr><td>Bonus</td><td class="amount">${this.formatCurrency(payroll.bonus, false)}</td></tr>
+                                <tr><td>Overtime @1.5x (${payroll.overtime1x5.hours} hrs)</td><td class="amount">${this.formatCurrency(payroll.overtime1x5.pay, false)}</td></tr>
+                                <tr><td>Overtime @2x (${payroll.overtime2x0.hours} hrs)</td><td class="amount">${this.formatCurrency(payroll.overtime2x0.pay, false)}</td></tr>
+                                <tr><th>Gross Earnings</th><th class="amount">${this.formatCurrency(payroll.grossPay, false)}</th></tr>
+                            </tbody>
+                        </table>
+                        <table class="payslip-table">
+                            <thead><tr><th>Deductions & Tax</th><th class="amount">Amount (Ksh)</th></tr></thead>
+                            <tbody>
+                                <tr><td>N.S.S.F.</td><td class="amount">(${this.formatCurrency(payroll.nssf, false)})</td></tr>
+                                <tr><th>Taxable Pay</th><th class="amount">${this.formatCurrency(payroll.taxablePay, false)}</th></tr>
+                                <tr><td>Income Tax</td><td class="amount">(${this.formatCurrency(payroll.incomeTax, false)})</td></tr>
+                                <tr><td>Personal Relief</td><td class="amount">${this.formatCurrency(payroll.personalRelief, false)}</td></tr>
+                                <tr><td>Insurance Relief</td><td class="amount">${this.formatCurrency(payroll.insuranceRelief, false)}</td></tr>
+                                <tr><th>P.A.Y.E</th><th class="amount">(${this.formatCurrency(payroll.paye, false)})</th></tr>
+                                <tr><th>Gross Pay after Tax</th><th class="amount">${this.formatCurrency(payroll.grossPayAfterTax, false)}</th></tr>
+                                <tr><td>Telephone Allowance Advance</td><td class="amount">(${this.formatCurrency(payroll.advance, false)})</td></tr>
+                                <tr><td>Housing Levy</td><td class="amount">(${this.formatCurrency(payroll.housingLevy, false)})</td></tr>
+                                <tr><td>S.H.I.F. (NHIF)</td><td class="amount">(${this.formatCurrency(payroll.nhif, false)})</td></tr>
+                                <tr><td>HELB</td><td class="amount">(${this.formatCurrency(payroll.helb, false)})</td></tr>
+                                <tr><th>Total Deductions After Tax</th><th class="amount">(${this.formatCurrency(payroll.totalDeductionsAfterTax, false)})</th></tr>
+                            </tbody>
+                        </table>
+                        <div class="payslip-summary">
+                            Net Pay: Ksh ${this.formatCurrency(payroll.netPay, false)}
+                        </div>
+                        <div class="payslip-footer">
+                            <strong>PERSONAL INFO:</strong><br>
+                            Payment Mode: Bank Transfer<br>
+                            Bank: ${employee.bankName || 'N/A'} | Branch: ${employee.bankBranch || 'N/A'} | Acc: ${employee.bankAccount || 'N/A'}<br>
+                            ID: ${employee.nationalId || 'N/A'} | KRA PIN: ${employee.kraPin || 'N/A'} | NHIF: ${employee.nhifNo || 'N/A'} | NSSF: ${employee.nssfNo || 'N/A'}
+                        </div>
+                    </div>
+                `;
+                document.getElementById('payslip-modal').style.display = 'block';
+            },
+            downloadPayslip() {
+                const payslipElement = document.getElementById('payslip-content');
+                const employeeName = payslipElement.dataset.employeeName || 'employee';
+                const period = payslipElement.dataset.period || 'payslip';
+                const filename = `Payslip-${employeeName.replace(/ /g, '_')}-${period}.pdf`;
+                const opt = {
+                    margin: 0.5,
+                    filename: filename,
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2 },
+                    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+                };
+                html2pdf().from(payslipElement.firstElementChild).set(opt).save();
+            },
+            calculatePayroll(employee) {
+                const basicPay = employee.salary || 0;
+                const hourlyRate = basicPay / (4 * 45); // Assuming 45-hour work week
+
+                // Earnings
+                const telephone = employee.telephone || 3571.00; // Example default
+                const bonus = employee.bonus || 0;
+                const overtime1x5 = { hours: employee.overtime1x5 || 0, pay: (employee.overtime1x5 || 0) * hourlyRate * 1.5 };
+                const overtime2x0 = { hours: employee.overtime2x0 || 0, pay: (employee.overtime2x0 || 0) * hourlyRate * 2.0 };
+                const grossPay = basicPay + telephone + bonus + overtime1x5.pay + overtime2x0.pay;
+
+                // Pre-tax deductions
+                const nssf = Math.min(grossPay * 0.06, 2160); // Updated NSSF
+                const taxablePay = grossPay - nssf;
+
+                // Tax Calculation
+                let incomeTax = 0;
+                // Simplified KRA tax bands for demonstration
+                if (taxablePay > 32333) incomeTax = (24000 * 0.1) + (8333 * 0.25) + ((taxablePay - 32333) * 0.30);
+                else if (taxablePay > 24000) incomeTax = (24000 * 0.1) + ((taxablePay - 24000) * 0.25);
+                else incomeTax = taxablePay * 0.1;
+
+                const personalRelief = 2400.00;
+                const insuranceRelief = 0; // Example
+                const paye = Math.max(0, incomeTax - personalRelief - insuranceRelief);
+
+                const grossPayAfterTax = grossPay - paye;
+
+                // Post-tax deductions
+                const advance = employee.advance || 0;
+                const housingLevy = grossPay * 0.015;
+                let nhif = 1700; // SHIF example, replace with actual logic
+                const helb = 1787.00; // Example fixed deduction
+                const totalDeductionsAfterTax = advance + housingLevy + nhif + helb;
+
+                const netPay = grossPayAfterTax - totalDeductionsAfterTax;
+
+                return {
+                    telephone, bonus, overtime1x5, overtime2x0, grossPay, nssf, taxablePay,
+                    incomeTax, personalRelief, insuranceRelief, paye, grossPayAfterTax,
+                    advance, housingLevy, nhif, helb, totalDeductionsAfterTax, netPay
+                };
+            },
+            formatCurrency(amount, withSymbol = true) {
+                const formattedAmount = (amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                return withSymbol ? `Ksh ${formattedAmount}` : formattedAmount;
+            }
+        };
+
+        window.DocumentModule = {
+            setupEventListeners() {
+                const modal = document.getElementById('document-modal');
+                modal.querySelector('.close-modal').addEventListener('click', () => modal.style.display = 'none');
+                window.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
+                document.getElementById('document-upload-form').addEventListener('submit', (e) => this.handleSave(e));
+            },
+            openModal(employeeId) { /* ... */ },
+            renderList(employeeId) { /* ... */ },
+            async handleSave(e) { /* ... */ },
+            async handleDelete(docId) { /* ... */ }
+        };
+
+        window.AttendanceModule = {
+            allRecords: [],
+            employees: [],
+            init(state) {
+                this.allRecords = state.attendance;
+                this.employees = state.employees;
+                this.populateFilters();
+                this.render(this.allRecords);
+            },
+            populateFilters() {
+                const select = document.getElementById('attendance-employee-filter');
+                select.innerHTML = '<option value="">All Employees</option>'; // Reset
+                this.employees.forEach(emp => {
+                    const option = document.createElement('option');
+                    option.value = emp.id;
+                    option.textContent = emp.name;
+                    select.appendChild(option);
+                });
+            },
+            setupEventListeners() {
+                document.getElementById('attendance-date-filter').addEventListener('change', () => this.filterAndRender());
+                document.getElementById('attendance-employee-filter').addEventListener('change', () => this.filterAndRender());
+            },
+            filterAndRender() {
+                const dateFilter = document.getElementById('attendance-date-filter').value;
+                const employeeFilter = document.getElementById('attendance-employee-filter').value;
+
+                let filteredRecords = this.allRecords;
+
+                if (dateFilter) {
+                    filteredRecords = filteredRecords.filter(rec => rec.date === dateFilter);
+                }
+                if (employeeFilter) {
+                    filteredRecords = filteredRecords.filter(rec => rec.employeeId === employeeFilter);
+                }
+
+                this.render(filteredRecords);
+            },
+            render(records) {
+                const tableBody = document.querySelector('#admin-attendance-table tbody');
+                tableBody.innerHTML = '';
+                if (!records || records.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No attendance records found.</td></tr>';
+                    return;
+                }
+
+                tableBody.innerHTML = records.map(rec => {
+                    const employee = this.employees.find(e => e.id === rec.employeeId);
+                    const clockIn = rec.clockIn?.toDate ? rec.clockIn.toDate() : null;
+                    const clockOut = rec.clockOut?.toDate ? rec.clockOut.toDate() : null;
+                    let hoursWorked = 'N/A';
+                    if (clockIn && clockOut) {
+                        const diffMs = clockOut - clockIn;
+                        hoursWorked = (diffMs / (1000 * 60 * 60)).toFixed(2);
+                    }
+                    return `
+                        <tr>
+                            <td>${employee ? employee.name : 'Unknown Employee'}</td>
+                            <td>${rec.date}</td>
+                            <td>${clockIn ? clockIn.toLocaleTimeString() : '-'}</td>
+                            <td>${clockOut ? clockOut.toLocaleTimeString() : '-'}</td>
+                            <td>${hoursWorked}</td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+        };
+
+        // Kick off the application
+        App.init();
+    });
+    </script>
+
+</body>
+</html>
+                    }
+                    return `
+                        <tr>
+                            <td>${employee ? employee.name : 'Unknown Employee'}</td>
+                            <td>${rec.date}</td>
+                            <td>${clockIn ? clockIn.toLocaleTimeString() : '-'}</td>
+                            <td>${clockOut ? clockOut.toLocaleTimeString() : '-'}</td>
+                            <td>${hoursWorked}</td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+        };
+
+        // Kick off the application
+        App.init();
+    });
+    </script>
+
+</body>
+</html>
