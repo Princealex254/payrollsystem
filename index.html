@@ -4431,11 +4431,35 @@
   });
 
   document.getElementById('googleLoginBtn')?.addEventListener('click', async () => {
-    try { 
-      await signInWithPopup(auth, googleProvider);
+    try {
+      // Set flag to prevent auth observer from routing during our check
+      skipAuthRouting = true;
+      
+      const result = await signInWithPopup(auth, googleProvider);
+      const googleUser = result.user;
+      
+      // Check if this email exists in our Firestore users collection
+      const userQuery = query(collection(db, COLLECTIONS.USERS), where('email', '==', googleUser.email), limit(1));
+      const userSnap = await getDocs(userQuery);
+      
+      if (userSnap.empty) {
+        // Email not registered - sign out and show error
+        await signOut(auth);
+        toast('This Google account is not registered in our system. Please sign up first or use email/password login.', 'error');
+        skipAuthRouting = false;
+        return;
+      }
+      
+      // User exists - allow sign in
+      skipAuthRouting = false;
       // Auth state observer will handle the rest
     }
-    catch (err) { toast(getFriendlyErrorMessage(err.code, 'Google login failed. Please try again.'), 'error'); }
+    catch (err) { 
+      skipAuthRouting = false;
+      if (err.code !== 'auth/popup-closed-by-user') {
+        toast(getFriendlyErrorMessage(err.code, 'Google login failed. Please try again.'), 'error');
+      }
+    }
   });
 
   document.getElementById('registerBtn')?.addEventListener('click', (e) => {
