@@ -1507,7 +1507,7 @@
           <strong id="sidebarName">Admin</strong>
           <span id="sidebarRole">Administrator</span>
         </div>
-        <button onclick="window.appLogout()" title="Sign Out" style="background: rgba(255,255,255,0.1); color: #fff; border: none; border-radius: 8px; width: 32px; height: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s;">
+        <button id="sidebarLogoutBtn" title="Sign Out" style="background: rgba(255,255,255,0.1); color: #fff; border: none; border-radius: 8px; width: 32px; height: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s;">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
         </button>
       </div>
@@ -1545,7 +1545,7 @@
     <div class="modal-inner">
       <div class="modal-hdr">
         <h3 id="empModalTitle">Add Employee</h3>
-        <button class="modal-close-btn" onclick="closeModal('empModal')">&#10005;</button>
+        <button class="modal-close-btn" data-close-modal="empModal">&#10005;</button>
       </div>
       <input type="hidden" id="em-id">
       <div class="form-grid">
@@ -1687,9 +1687,17 @@
         </div>
       </div>
       <div class="form-actions">
-        <button class="btn btn-outline" onclick="closeModal('empModal')">Cancel</button>
+        <button class="btn btn-outline" id="cancelEmpBtn">Cancel</button>
         <button class="btn btn-primary" id="saveEmpBtn">Save Employee</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Add event listener for cancel button (CSP compliance - no inline handlers)
+  document.getElementById('cancelEmpBtn')?.addEventListener('click', () => closeModal('empModal'));
+</script>
     </div>
   </div>
 </div>
@@ -1700,7 +1708,7 @@
     <div class="modal-inner">
       <div class="modal-hdr">
         <h3>Generate Payroll</h3>
-        <button class="modal-close-btn" onclick="closeModal('payrollModal')">&#10005;</button>
+        <button class="modal-close-btn" data-close-modal="payrollModal">&#10005;</button>
       </div>
       <div class="calc-inputs">
         <div class="form-group">
@@ -1775,7 +1783,7 @@
         <div style="display:flex;gap:8px;align-items:center;">
           <button class="btn btn-primary btn-sm" id="sendEmailBtn">Send via Email</button>
           <button class="btn btn-success btn-sm" id="dlPDFBtn">Download PDF</button>
-          <button class="modal-close-btn" onclick="closeModal('slipModal')">&#10005;</button>
+          <button class="modal-close-btn" data-close-modal="slipModal">&#10005;</button>
         </div>
       </div>
       <div id="slipPreview"></div>
@@ -1789,7 +1797,7 @@
     <div class="modal-inner">
       <div class="modal-hdr">
         <h3>Company Settings</h3>
-        <button class="modal-close-btn" onclick="closeModal('settingsModal')">&#10005;</button>
+        <button class="modal-close-btn" data-close-modal="settingsModal">&#10005;</button>
       </div>
       <div class="form-grid">
         <div class="form-divider col-span-2"><span>Company Information</span></div>
@@ -1852,7 +1860,7 @@
         </div>
       </div>
       <div class="form-actions">
-        <button class="btn btn-outline" onclick="closeModal('settingsModal')">Cancel</button>
+        <button class="btn btn-outline" id="cancelSettingsBtn">Cancel</button>
         <button class="btn btn-primary" id="saveSettingsBtn">Save Settings</button>
       </div>
     </div>
@@ -1865,7 +1873,7 @@
     <div class="modal-inner">
       <div class="modal-hdr">
         <h3>Invite User</h3>
-        <button class="modal-close-btn" onclick="closeModal('userModal')">&#10005;</button>
+        <button class="modal-close-btn" data-close-modal="userModal">&#10005;</button>
       </div>
       <div class="form-grid">
         <div class="form-group col-span-2">
@@ -4995,6 +5003,12 @@
 
   // Save employee button
   document.getElementById('saveEmpBtn')?.addEventListener('click', saveEmployee);
+  
+  // Settings modal cancel button
+  document.getElementById('cancelSettingsBtn')?.addEventListener('click', () => closeModal('settingsModal'));
+  
+  // User modal cancel button
+  document.getElementById('cancelUserBtn')?.addEventListener('click', () => closeModal('userModal'));
 
   // Close modals on Escape
   document.addEventListener('keydown', (e) => {
