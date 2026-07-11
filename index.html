@@ -1,0 +1,5005 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prince Alex Digital — Cloud Payroll & HR Management Platform</title>
+  <meta name="description" content="Enterprise-grade cloud payroll and HR management platform for businesses of all sizes.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+  <!-- JSZip loaded dynamically via ES module import for password-protected ZIP encryption -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    /* ── SPLIT-SCREEN LOGIN LAYOUT ────────────────────── */
+    .login-split {
+      display: flex;
+      min-height: 100vh;
+      width: 100%;
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+    }
+
+    /* ── LEFT SIDE: Branding ──────────────────────────── */
+    .login-left {
+      flex: 0 0 45%;
+      background: linear-gradient(135deg, #0F172A 0%, #1E1B4B 40%, #312E81 70%, #4C1D95 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 48px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .login-left::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -30%;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(99,102,241,0.15) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .login-left::after {
+      content: '';
+      position: absolute;
+      bottom: -20%;
+      left: -20%;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(245,158,11,0.08) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .login-left-top {
+      position: relative;
+      z-index: 1;
+    }
+
+    .login-left-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .login-left-brand-icon {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, #F59E0B, #FB923C);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      box-shadow: 0 4px 16px rgba(245,158,11,0.3);
+    }
+
+    .login-left-brand-text h2 {
+      color: #fff;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .login-left-brand-text p {
+      color: rgba(255,255,255,0.4);
+      font-size: 12px;
+      margin-top: 1px;
+    }
+
+    .login-left-hero {
+      position: relative;
+      z-index: 1;
+      margin-top: 60px;
+    }
+
+    .login-left-hero h1 {
+      color: #fff;
+      font-size: 42px;
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -1px;
+      margin-bottom: 16px;
+    }
+
+    .login-left-hero h1 span {
+      background: linear-gradient(135deg, #F59E0B, #FB923C);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .login-left-hero p {
+      color: rgba(255,255,255,0.6);
+      font-size: 16px;
+      line-height: 1.6;
+      max-width: 380px;
+    }
+
+    .login-left-features {
+      position: relative;
+      z-index: 1;
+      margin-top: 40px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .login-left-feature {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: rgba(255,255,255,0.7);
+      font-size: 13.5px;
+      font-weight: 500;
+    }
+
+    .login-left-feature .lf-icon {
+      width: 22px;
+      height: 22px;
+      background: rgba(16,185,129,0.15);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+
+    .login-left-bottom {
+      position: relative;
+      z-index: 1;
+    }
+
+    .login-left-testimonial {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .login-left-stars {
+      color: #F59E0B;
+      font-size: 16px;
+      letter-spacing: 2px;
+    }
+
+    .login-left-testimonial p {
+      color: rgba(255,255,255,0.5);
+      font-size: 13px;
+    }
+
+    .login-left-testimonial p strong {
+      color: rgba(255,255,255,0.8);
+    }
+
+    /* ── RIGHT SIDE: Login Card ───────────────────────── */
+    .login-right {
+      flex: 0 0 55%;
+      background: #F8FAFC;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      position: relative;
+      overflow-y: auto;
+    }
+
+    [data-theme="dark"] .login-right {
+      background: #020617;
+    }
+
+    .login-right-inner {
+      width: 100%;
+      max-width: 440px;
+    }
+
+    .login-right-top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .login-right-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .login-right-logo-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #4F46E5, #7C3AED);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: #fff;
+    }
+
+    .login-right-logo span {
+      font-size: 16px;
+      font-weight: 700;
+      color: #0F172A;
+      letter-spacing: -0.3px;
+    }
+
+    [data-theme="dark"] .login-right-logo span {
+      color: #F1F5F9;
+    }
+
+    .login-right-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .login-dark-toggle {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      border: 1.5px solid #E2E8F0;
+      background: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      transition: all 0.2s ease;
+    }
+
+    [data-theme="dark"] .login-dark-toggle {
+      border-color: #334155;
+      background: #1E293B;
+    }
+
+    .login-dark-toggle:hover {
+      border-color: #4F46E5;
+    }
+
+    .login-right-header {
+      margin-bottom: 20px;
+    }
+
+    .login-right-header h2 {
+      font-size: 24px;
+      font-weight: 800;
+      color: #0F172A;
+      letter-spacing: -0.5px;
+      margin-bottom: 4px;
+    }
+
+    [data-theme="dark"] .login-right-header h2 {
+      color: #F1F5F9;
+    }
+
+    .login-right-header p {
+      color: #64748B;
+      font-size: 14px;
+    }
+
+    /* ── Login Tabs ───────────────────────────────────── */
+    .login-tabs {
+      display: flex;
+      gap: 4px;
+      background: #F1F5F9;
+      padding: 4px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+
+    [data-theme="dark"] .login-tabs {
+      background: #0F172A;
+    }
+
+    .login-tab {
+      flex: 1;
+      padding: 10px 12px;
+      border: none;
+      border-radius: 9px;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: 'DM Sans', sans-serif;
+      color: #64748B;
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .login-tab:hover { color: #0F172A; }
+
+    [data-theme="dark"] .login-tab:hover { color: #F1F5F9; }
+
+    .login-tab.active {
+      background: #fff;
+      color: #4F46E5;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+
+    [data-theme="dark"] .login-tab.active {
+      background: #1E293B;
+      color: #818CF8;
+    }
+
+    .login-tab .lt-icon { font-size: 15px; }
+
+    /* ── Login Form ───────────────────────────────────── */
+    .login-form-group {
+      margin-bottom: 14px;
+    }
+
+    .login-form-group label {
+      display: block;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: 6px;
+      letter-spacing: 0.2px;
+    }
+
+    [data-theme="dark"] .login-form-group label {
+      color: #94A3B8;
+    }
+
+    .login-form-group input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: 'DM Sans', sans-serif;
+      background: #fff;
+      color: #0F172A;
+      transition: all 0.2s ease;
+      outline: none;
+    }
+
+    [data-theme="dark"] .login-form-group input {
+      background: #1E293B;
+      border-color: #334155;
+      color: #F1F5F9;
+    }
+
+    .login-form-group input:focus {
+      border-color: #4F46E5;
+      box-shadow: 0 0 0 3px rgba(79,70,229,0.1);
+    }
+
+    .login-form-group input::placeholder {
+      color: #94A3B8;
+    }
+
+    .login-form-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .login-remember {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: #64748B;
+      cursor: pointer;
+    }
+
+    .login-remember input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: #4F46E5;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .login-forgot {
+      font-size: 13px;
+      font-weight: 600;
+      color: #4F46E5;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .login-forgot:hover {
+      color: #4338CA;
+    }
+
+    .login-submit-btn {
+      width: 100%;
+      padding: 13px;
+      background: linear-gradient(135deg, #4F46E5, #7C3AED);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(79,70,229,0.25);
+    }
+
+    .login-submit-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(79,70,229,0.35);
+    }
+
+    .login-submit-btn:active {
+      transform: translateY(0);
+    }
+
+    .login-submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .login-divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    .login-divider::before,
+    .login-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #E2E8F0;
+    }
+
+    [data-theme="dark"] .login-divider::before,
+    [data-theme="dark"] .login-divider::after {
+      background: #334155;
+    }
+
+    .login-divider span {
+      font-size: 12px;
+      color: #94A3B8;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .login-google-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 12px;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 10px;
+      background: #fff;
+      color: #1E293B;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    [data-theme="dark"] .login-google-btn {
+      background: #1E293B;
+      border-color: #334155;
+      color: #F1F5F9;
+    }
+
+    .login-google-btn:hover {
+      background: #F8FAFC;
+      border-color: #CBD5E1;
+    }
+
+    [data-theme="dark"] .login-google-btn:hover {
+      background: #0F172A;
+    }
+
+    .login-google-btn img {
+      width: 20px;
+      height: 20px;
+    }
+
+    .login-footer-links {
+      text-align: center;
+      margin-top: 16px;
+    }
+
+    .login-footer-links a {
+      color: #4F46E5;
+      font-size: 13.5px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .login-footer-links a:hover {
+      text-decoration: underline;
+    }
+
+    .login-footer-links p {
+      color: #64748B;
+      font-size: 13px;
+      margin-top: 4px;
+    }
+
+    .login-bottom-bar {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid #E2E8F0;
+    }
+
+    [data-theme="dark"] .login-bottom-bar {
+      border-top-color: #334155;
+    }
+
+    .login-bottom-bar a {
+      font-size: 12px;
+      color: #94A3B8;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .login-bottom-bar a:hover {
+      color: #4F46E5;
+    }
+
+    .login-bottom-bar span {
+      font-size: 12px;
+      color: #CBD5E1;
+    }
+
+    [data-theme="dark"] .login-bottom-bar span {
+      color: #475569;
+    }
+
+    /* ── Loading Screen ───────────────────────────────── */
+    .loading-screen {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(135deg, #0F172A, #1E1B4B);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .loading-screen.visible {
+      display: flex;
+    }
+
+    .loading-screen-logo {
+      width: 80px;
+      height: 80px;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 8px;
+      overflow: hidden;
+    }
+
+    .loading-screen-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .loading-screen h2 {
+      color: #fff;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .loading-screen p {
+      color: rgba(255,255,255,0.5);
+      font-size: 14px;
+    }
+
+    .loading-bar {
+      width: 280px;
+      height: 4px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+
+    .loading-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #4F46E5, #7C3AED, #F59E0B);
+      border-radius: 2px;
+      animation: loadingProgress 2s ease-in-out forwards;
+    }
+
+    @keyframes loadingProgress {
+      0% { width: 0%; }
+      30% { width: 35%; }
+      60% { width: 65%; }
+      100% { width: 100%; }
+    }
+
+    .loading-screen-tips {
+      color: rgba(255,255,255,0.3);
+      font-size: 12px;
+      margin-top: 4px;
+      animation: tipFade 2s ease-in-out infinite;
+    }
+
+    @keyframes tipFade {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.8; }
+    }
+
+    /* ── Responsive Login ─────────────────────────────── */
+    @media (max-width: 1024px) {
+      .login-left { flex: 0 0 40%; padding: 36px; }
+      .login-right { flex: 0 0 60%; }
+      .login-left-hero h1 { font-size: 32px; }
+    }
+
+    @media (max-width: 768px) {
+      .login-split { flex-direction: column; position: relative; min-height: 100dvh; }
+      .login-left { flex: none; padding: 32px 24px 24px; min-height: auto; }
+      .login-left-hero { margin-top: 32px; }
+      .login-left-hero h1 { font-size: 28px; }
+      .login-left-features { grid-template-columns: 1fr; gap: 6px; }
+      .login-left-bottom { display: none; }
+      .login-right { flex: none; padding: 24px; }
+      .login-right-inner { max-width: 100%; }
+      .login-right-top-bar { margin-bottom: 20px; }
+    }
+
+    @media (max-width: 500px) {
+      .login-left { padding: 24px 20px 16px; }
+      .login-left-hero h1 { font-size: 24px; }
+      .login-left-hero p { font-size: 14px; }
+      .login-right { padding: 20px; }
+      .login-right-header h2 { font-size: 22px; }
+      .login-tab { font-size: 12px; padding: 8px 8px; }
+      .login-bottom-bar { flex-wrap: wrap; gap: 12px; }
+    }
+
+    /* ── Owner Dashboard Specific ─────────────────────── */
+    .company-card {
+      background: var(--card);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      padding: 20px;
+      transition: all var(--transition);
+      cursor: pointer;
+    }
+    .company-card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+    .company-card .cc-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .company-card .cc-logo {
+      width: 44px; height: 44px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; font-weight: 700; color: #fff;
+    }
+    .company-card .cc-name { font-size: 14px; font-weight: 700; }
+    .company-card .cc-email { font-size: 11px; color: var(--text-muted); }
+    .company-card .cc-stats { display: flex; gap: 16px; margin-top: 10px; }
+    .company-card .cc-stat { text-align: center; }
+    .company-card .cc-stat strong { display: block; font-size: 16px; font-weight: 700; }
+    .company-card .cc-stat small { font-size: 10px; color: var(--text-muted); text-transform: uppercase; }
+
+    /* ── Subscription Plan Cards ──────────────────────── */
+    .plan-card {
+      background: var(--card);
+      border-radius: var(--radius-lg);
+      border: 2px solid var(--border);
+      padding: 28px;
+      text-align: center;
+      transition: all var(--transition);
+      position: relative;
+    }
+    .plan-card:hover { border-color: var(--brand-primary); }
+    .plan-card.featured {
+      border-color: var(--brand-primary);
+      box-shadow: 0 0 0 4px rgba(99,102,241,0.1);
+    }
+    .plan-card.featured::before {
+      content: 'POPULAR';
+      position: absolute;
+      top: -10px; left: 50%;
+      transform: translateX(-50%);
+      background: var(--brand-primary);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 14px;
+      border-radius: 20px;
+      letter-spacing: 1px;
+    }
+    .plan-card .plan-name { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+    .plan-card .plan-price { font-size: 36px; font-weight: 800; color: var(--brand-primary); }
+    .plan-card .plan-price small { font-size: 14px; font-weight: 500; color: var(--text-muted); }
+    .plan-card .plan-features { list-style: none; padding: 0; margin: 20px 0; text-align: left; }
+    .plan-card .plan-features li {
+      padding: 8px 0;
+      font-size: 13px;
+      color: var(--text-2);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .plan-card .plan-features li:last-child { border-bottom: none; }
+    .plan-card .plan-features li::before { content: ''; display: inline-block; width: 6px; height: 6px; background: var(--success); border-radius: 50%; flex-shrink: 0; }
+
+    /* ── Employee Portal Specific ─────────────────────── */
+    .emp-profile-header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 24px;
+      background: var(--card);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      margin-bottom: 24px;
+    }
+    .emp-avatar-lg {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--brand-primary), #7C3AED);
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 32px; font-weight: 700;
+    }
+
+    /* ── Notification Badge ───────────────────────────── */
+    .notif-badge {
+      position: relative;
+    }
+    .notif-badge::after {
+      content: attr(data-count);
+      position: absolute;
+      top: -4px; right: -4px;
+      background: var(--danger);
+      color: #fff;
+      font-size: 9px;
+      font-weight: 700;
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ── Quick Action Grid ────────────────────────────── */
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .quick-action {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+    .quick-action:hover {
+      border-color: var(--brand-primary);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+    .quick-action .qa-icon { font-size: 28px; margin-bottom: 8px; display: block; }
+    .quick-action .qa-label { font-size: 12px; font-weight: 600; color: var(--text-2); }
+
+    /* ── Activity Timeline ────────────────────────────── */
+    .timeline { position: relative; padding-left: 24px; }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 8px; top: 0; bottom: 0;
+      width: 2px;
+      background: var(--border);
+    }
+    .timeline-item {
+      position: relative;
+      padding-bottom: 20px;
+    }
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -20px; top: 4px;
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      background: var(--brand-primary);
+      border: 2px solid var(--card);
+    }
+    .timeline-item .tl-time { font-size: 11px; color: var(--text-muted); }
+    .timeline-item .tl-text { font-size: 13px; color: var(--text-2); margin-top: 2px; }
+
+    /* ── Payslip Preview Styles ───────────────────────── */
+    .payslip-preview {
+      font-family: 'DM Sans', sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    [data-theme="dark"] .payslip-preview {
+      background: #1E293B;
+    }
+
+    /* Header */
+    .ps-header {
+      background: linear-gradient(135deg, #6366F1 0%, #7C3AED 100%);
+      color: #fff;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .ps-header-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .ps-logo {
+      max-height: 60px;
+      max-width: 150px;
+      object-fit: contain;
+      background: #fff;
+      padding: 8px;
+      border-radius: 8px;
+    }
+
+    .ps-company-name {
+      font-size: 22px;
+      font-weight: 800;
+      margin: 0;
+      letter-spacing: -0.5px;
+    }
+
+    .ps-company-sub {
+      font-size: 12px;
+      opacity: 0.9;
+      margin: 4px 0 0 0;
+    }
+
+    /* Title Bar */
+    .ps-title-bar {
+      background: #F8FAFC;
+      padding: 16px 24px;
+      text-align: center;
+      border-bottom: 2px solid #E2E8F0;
+    }
+
+    [data-theme="dark"] .ps-title-bar {
+      background: #0F172A;
+      border-bottom-color: #334155;
+    }
+
+    .ps-title-bar h2 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 800;
+      color: #0F172A;
+      letter-spacing: -0.3px;
+    }
+
+    [data-theme="dark"] .ps-title-bar h2 {
+      color: #F1F5F9;
+    }
+
+    /* Employee Card */
+    .ps-emp-card {
+      background: #F8FAFC;
+      padding: 20px 24px;
+      border-bottom: 1px solid #E2E8F0;
+    }
+
+    [data-theme="dark"] .ps-emp-card {
+      background: #0F172A;
+      border-bottom-color: #334155;
+    }
+
+    .ps-emp-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+
+    .ps-emp-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .ps-emp-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .ps-emp-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #64748B;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    [data-theme="dark"] .ps-emp-label {
+      color: #94A3B8;
+    }
+
+    .ps-emp-value {
+      font-size: 14px;
+      font-weight: 600;
+      color: #0F172A;
+    }
+
+    [data-theme="dark"] .ps-emp-value {
+      color: #F1F5F9;
+    }
+
+    /* Main Grid */
+    .ps-main-grid {
+      padding: 24px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    /* Section */
+    .ps-section {
+      background: #fff;
+      border: 1px solid #E2E8F0;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    [data-theme="dark"] .ps-section {
+      background: #1E293B;
+      border-color: #334155;
+    }
+
+    .ps-section-header {
+      padding: 10px 16px;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 0.5px;
+      color: #fff;
+    }
+
+    .ps-section-earnings {
+      background: linear-gradient(135deg, #10B981, #059669);
+    }
+
+    .ps-section-deductions {
+      background: linear-gradient(135deg, #EF4444, #DC2626);
+    }
+
+    .ps-section-tax {
+      background: linear-gradient(135deg, #6366F1, #4F46E5);
+    }
+
+    .ps-section-after-tax {
+      background: linear-gradient(135deg, #8B5CF6, #7C3AED);
+    }
+
+    .ps-section-deductions-after {
+      background: linear-gradient(135deg, #F59E0B, #D97706);
+    }
+
+    .ps-section-body {
+      padding: 12px 16px;
+    }
+
+    .ps-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      font-size: 13px;
+      color: #475569;
+      border-bottom: 1px dashed #E2E8F0;
+    }
+
+    [data-theme="dark"] .ps-row {
+      color: #CBD5E1;
+      border-bottom-color: #334155;
+    }
+
+    .ps-row:last-child {
+      border-bottom: none;
+    }
+
+    .ps-amount {
+      font-weight: 600;
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+    }
+
+    .ps-subtotal-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      margin-top: 8px;
+      border-top: 2px solid #E2E8F0;
+      font-weight: 700;
+      font-size: 13px;
+      color: #0F172A;
+    }
+
+    [data-theme="dark"] .ps-subtotal-row {
+      border-top-color: #334155;
+      color: #F1F5F9;
+    }
+
+    .ps-highlight-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px;
+      background: #F8FAFC;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 13px;
+      color: #0F172A;
+      margin-bottom: 8px;
+    }
+
+    [data-theme="dark"] .ps-highlight-row {
+      background: #0F172A;
+      color: #F1F5F9;
+    }
+
+    .ps-relief-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      font-size: 13px;
+      color: #10B981;
+      font-weight: 600;
+    }
+
+    .ps-relief-amount {
+      color: #10B981;
+      font-weight: 700;
+    }
+
+    .ps-paye-row {
+      background: #FEF2F2;
+      padding: 8px 12px;
+      border-radius: 6px;
+      margin-top: 8px;
+    }
+
+    [data-theme="dark"] .ps-paye-row {
+      background: #450A0A;
+    }
+
+    /* Net Pay Card */
+    .ps-net-pay-card {
+      background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+      color: #fff;
+      padding: 20px 24px;
+      margin: 24px;
+      border-radius: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+
+    .ps-net-pay-label {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    .ps-net-pay-amount {
+      font-size: 24px;
+      font-weight: 800;
+      font-family: 'DM Mono', monospace;
+    }
+
+    /* Footer Grid */
+    .ps-footer-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      padding: 0 24px 24px;
+    }
+
+    .ps-footer-card {
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    [data-theme="dark"] .ps-footer-card {
+      background: #0F172A;
+      border-color: #334155;
+    }
+
+    .ps-footer-card h3 {
+      margin: 0 0 12px 0;
+      font-size: 13px;
+      font-weight: 700;
+      color: #0F172A;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    [data-theme="dark"] .ps-footer-card h3 {
+      color: #F1F5F9;
+    }
+
+    .ps-footer-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      font-size: 12px;
+      border-bottom: 1px dashed #E2E8F0;
+    }
+
+    [data-theme="dark"] .ps-footer-row {
+      border-bottom-color: #334155;
+    }
+
+    .ps-footer-row:last-child {
+      border-bottom: none;
+    }
+
+    .ps-footer-row span:first-child {
+      color: #64748B;
+      font-weight: 500;
+    }
+
+    [data-theme="dark"] .ps-footer-row span:first-child {
+      color: #94A3B8;
+    }
+
+    .ps-footer-row span:last-child {
+      color: #0F172A;
+      font-weight: 600;
+    }
+
+    [data-theme="dark"] .ps-footer-row span:last-child {
+      color: #F1F5F9;
+    }
+
+    /* Footer */
+    .ps-footer {
+      background: #F8FAFC;
+      padding: 12px 24px;
+      text-align: center;
+      border-top: 1px solid #E2E8F0;
+    }
+
+    [data-theme="dark"] .ps-footer {
+      background: #0F172A;
+      border-top-color: #334155;
+    }
+
+    .ps-footer p {
+      margin: 0;
+      font-size: 11px;
+      color: #94A3B8;
+      font-style: italic;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .ps-emp-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      .ps-footer-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .ps-net-pay-card {
+        margin: 16px;
+        padding: 16px 20px;
+      }
+
+      .ps-net-pay-amount {
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div id="toastZone"></div>
+
+<!-- ============================================================
+     LOADING SCREEN
+     ============================================================ -->
+<div class="loading-screen" id="loadingScreen">
+  <div class="loading-screen-logo" id="loadingLogo">
+    <img src="mylogo-removebg-preview.png" alt="Prince Alex Digital Logo" />
+  </div>
+  <h2>Prince Alex Digital</h2>
+  <p>Loading your workspace...</p>
+  <div class="loading-bar"><div class="loading-bar-fill"></div></div>
+  <div class="loading-screen-tips">Preparing your dashboard</div>
+</div>
+
+<!-- ============================================================
+     LOGIN SECTION - SPLIT SCREEN
+     ============================================================ -->
+<div id="loginSection">
+  <div class="login-split">
+    <!-- LEFT SIDE: Branding & Features -->
+    <div class="login-left">
+      <div class="login-left-top">
+        <div class="login-left-brand">
+          <div class="login-left-brand-icon">
+            <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="44" height="44" rx="12" fill="url(#logo-gradient)"/>
+              <text x="22" y="29" text-anchor="middle" fill="white" font-family="'DM Sans', sans-serif" font-size="18" font-weight="800">PAD</text>
+              <defs>
+                <linearGradient id="logo-gradient" x1="0" y1="0" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#F59E0B"/>
+                  <stop offset="1" stop-color="#FB923C"/>
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+          <div class="login-left-brand-text">
+            <h2>Prince Alex Digital</h2>
+            <p>Payroll · Cloud Platform</p>
+          </div>
+        </div>
+        <div class="login-left-hero">
+          <h1>Payroll made<br><span>effortless.</span></h1>
+          <p>Manage employees, payroll, taxes and reports from anywhere.</p>
+        </div>
+
+        <!-- Contact CTA Section -->
+        <div style="margin-top: 32px; padding: 24px; background: rgba(255,255,255,0.08); border-radius: 12px; border: 1px solid rgba(255,255,255,0.15);">
+          <h3 style="margin: 0 0 16px 0; color: #fff; font-size: 15px; font-weight: 700; text-align: center;">Interested in Our Payroll System?</h3>
+          <p style="margin: 0 0 16px 0; color: rgba(255,255,255,0.7); font-size: 13px; text-align: center; line-height: 1.6;">Get in touch with us for demos, pricing, and custom solutions</p>
+          
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <a href="mailto:princealexdigital@gmail.com" style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: rgba(255,255,255,0.1); border-radius: 8px; text-decoration: none; border: 1px solid rgba(255,255,255,0.2); transition: all 0.2s;">
+              <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #4F46E5, #7C3AED); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <span style="color: #fff; font-size: 16px;">✉</span>
+              </div>
+              <div style="flex: 1; min-width: 0;">
+                <div style="font-size: 11px; color: rgba(255,255,255,0.6); font-weight: 500; margin-bottom: 2px;">Email us</div>
+                <div style="font-size: 13px; color: #fff; font-weight: 600;">princealexdigital@gmail.com</div>
+              </div>
+            </a>
+            
+            <a href="tel:+254717384875" style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: rgba(255,255,255,0.1); border-radius: 8px; text-decoration: none; border: 1px solid rgba(255,255,255,0.2); transition: all 0.2s;">
+              <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #10B981, #059669); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <span style="color: #fff; font-size: 16px;">📞</span>
+              </div>
+              <div style="flex: 1; min-width: 0;">
+                <div style="font-size: 11px; color: rgba(255,255,255,0.6); font-weight: 500; margin-bottom: 2px;">Call us</div>
+                <div style="font-size: 13px; color: #fff; font-weight: 600;">0717 384 875</div>
+              </div>
+            </a>
+            
+            <a href="https://www.princealex.digital" target="_blank" rel="noopener noreferrer" style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: rgba(255,255,255,0.1); border-radius: 8px; text-decoration: none; border: 1px solid rgba(255,255,255,0.2); transition: all 0.2s;">
+              <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #F59E0B, #FB923C); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <span style="color: #fff; font-size: 16px;">🌐</span>
+              </div>
+              <div style="flex: 1; min-width: 0;">
+                <div style="font-size: 11px; color: rgba(255,255,255,0.6); font-weight: 500; margin-bottom: 2px;">Visit website</div>
+                <div style="font-size: 13px; color: #fff; font-weight: 600;">www.princealex.digital</div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="login-left-bottom">
+        <div class="login-left-testimonial">
+          <div class="login-left-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <p>Trusted by businesses across <strong>Kenya and Africa</strong></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT SIDE: Login -->
+    <div class="login-right">
+      <div class="login-right-inner">
+        <!-- Top Bar -->
+        <div class="login-right-top-bar">
+          <div class="login-right-logo">
+            <div class="login-right-logo-icon">
+              <svg width="36" height="36" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="44" height="44" rx="12" fill="url(#logo-gradient2)"/>
+                <text x="22" y="29" text-anchor="middle" fill="white" font-family="'DM Sans', sans-serif" font-size="16" font-weight="800">PAD</text>
+                <defs>
+                  <linearGradient id="logo-gradient2" x1="0" y1="0" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#4F46E5"/>
+                    <stop offset="1" stop-color="#7C3AED"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+            <span>Prince Alex Payroll</span>
+          </div>
+          <div class="login-right-actions">
+            <button class="login-dark-toggle" id="loginDarkToggle" title="Toggle theme"></button>
+          </div>
+        </div>
+
+        <!-- Login View (Single Unified Login) -->
+        <div id="loginView">
+          <div style="text-align:center; margin-bottom: 20px;">
+            <svg width="56" height="56" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-bottom: 10px;">
+              <rect width="44" height="44" rx="12" fill="url(#logo-gradient3)"/>
+              <text x="22" y="29" text-anchor="middle" fill="white" font-family="'DM Sans', sans-serif" font-size="18" font-weight="800">PAD</text>
+              <defs>
+                <linearGradient id="logo-gradient3" x1="0" y1="0" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#4F46E5"/>
+                  <stop offset="1" stop-color="#7C3AED"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            <h2 style="font-size: 20px; font-weight: 800; color: #0F172A; margin: 0 0 4px 0; letter-spacing: -0.5px;">Welcome back</h2>
+            <p style="color: #64748B; font-size: 13px; margin: 0;">Sign in to continue to your workspace</p>
+          </div>
+
+          <form id="loginForm">
+            <div class="login-form-group">
+              <label>Email Address</label>
+              <input type="email" id="login-email" placeholder="you@company.com" required autocomplete="email">
+            </div>
+            <div class="login-form-group">
+              <label>Password</label>
+              <input type="password" id="login-password" placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;" required autocomplete="current-password">
+            </div>
+            <div class="login-form-row">
+              <label class="login-remember">
+                <input type="checkbox" checked> Remember me
+              </label>
+              <a href="#" id="toResetBtn" class="login-forgot">Forgot Password?</a>
+            </div>
+            <button type="submit" class="login-submit-btn" id="loginSubmitBtn">Sign In</button>
+          </form>
+          <div class="login-divider"><span>OR</span></div>
+          <button type="button" class="login-google-btn" id="googleLoginBtn">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+            Continue with Google
+          </button>
+          <div style="margin-top: 20px; padding: 16px; background: linear-gradient(135deg, #EEF2FF, #E0E7FF); border-radius: 10px; border: 1px solid #C7D2FE;">
+            <h3 style="margin: 0 0 6px 0; color: #3730A3; font-size: 15px; font-weight: 700; text-align: center;">Start Free Trial</h3>
+            <p style="margin: 0 0 12px 0; color: #475569; font-size: 12px; text-align: center; line-height: 1.4;">Create your company account — no credit card required</p>
+            <button type="button" id="registerBtn" style="width: 100%; padding: 10px 20px; background: linear-gradient(135deg, #4F46E5, #7C3AED); color: #ffffff; border: none; border-radius: 8px; font-size: 14px; font-weight: 700; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 12px rgba(79,70,229,0.25);">
+              Get Started Free
+            </button>
+            <p style="margin: 10px 0 0 0; color: #64748B; font-size: 11px; text-align: center;">14-day free trial · No credit card required</p>
+          </div>
+        </div>
+
+        <!-- Reset View -->
+        <div id="resetView" style="display: none;">
+          <div class="login-right-header">
+            <h2>Reset Password</h2>
+            <p>Enter your email to receive a recovery link</p>
+          </div>
+          <form id="resetForm">
+            <div class="login-form-group">
+              <label>Email Address</label>
+              <input type="email" id="reset-email" placeholder="you@company.com" required>
+            </div>
+            <button type="submit" class="login-submit-btn" style="margin-top:8px;">Send Reset Link</button>
+            <div class="login-footer-links" style="margin-top:20px;">
+              <a href="#" id="toLoginBtn">Back to Sign In</a>
+            </div>
+          </form>
+        </div>
+
+        <!-- Register / Free Trial View -->
+        <div id="registerView" style="display: none;">
+          <div class="login-right-header">
+            <h2>Start Free Trial</h2>
+            <p>Create your company account — 14 days free</p>
+          </div>
+          <form id="registerForm">
+            <div class="login-form-group">
+              <label>Company Name <span style="color:#EF4444;">*</span></label>
+              <input type="text" id="reg-company" placeholder="e.g. Acme Corp" required>
+            </div>
+            <div class="login-form-group">
+              <label>Your Full Name <span style="color:#EF4444;">*</span></label>
+              <input type="text" id="reg-name" placeholder="e.g. John Kamau" required>
+            </div>
+            <div class="login-form-group">
+              <label>Email Address <span style="color:#EF4444;">*</span></label>
+              <input type="email" id="reg-email" placeholder="you@company.com" required>
+            </div>
+            <div class="login-form-group">
+              <label>Phone Number</label>
+              <input type="tel" id="reg-phone" placeholder="+254 712 345 678">
+            </div>
+            <div class="login-form-group">
+              <label>Password <span style="color:#EF4444;">*</span></label>
+              <input type="password" id="reg-password" placeholder="Min. 8 characters" required minlength="8">
+            </div>
+            <button type="submit" class="login-submit-btn" style="margin-top:8px;">Create Account</button>
+            <div class="login-footer-links" style="margin-top:20px;">
+              <a href="#" id="toLoginFromRegister">Already have an account? Sign In</a>
+            </div>
+          </form>
+        </div>
+
+        <!-- Bottom Bar -->
+        <div class="login-bottom-bar">
+          <a href="#">Privacy</a>
+          <span>·</span>
+          <a href="#">Terms</a>
+          <span>·</span>
+          <a href="#">Support</a>
+          <span>·</span>
+          <span>v2.0</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     APP CONTAINER
+     ============================================================ -->
+<div id="appContainer" style="display: none; width: 100%;">
+  <div class="app-shell">
+    <!-- SIDEBAR -->
+    <nav class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <div class="sidebar-brand-logo">
+          <svg width="28" height="28" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="44" height="44" rx="12" fill="url(#logo-gradient4)"/>
+            <text x="22" y="29" text-anchor="middle" fill="white" font-family="'DM Sans', sans-serif" font-size="18" font-weight="800">PAD</text>
+            <defs>
+              <linearGradient id="logo-gradient4" x1="0" y1="0" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#F59E0B"/>
+                <stop offset="1" stop-color="#FB923C"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <h2>Prince Alex Digital</h2>
+        <p>Cloud Payroll & HR Platform</p>
+      </div>
+
+      <div class="nav-section" id="navContainer">
+        <!-- Navigation injected dynamically based on role -->
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-footer-avatar" id="sidebarAvatar">AD</div>
+        <div class="sidebar-footer-info">
+          <strong id="sidebarName">Admin</strong>
+          <span id="sidebarRole">Administrator</span>
+        </div>
+        <button onclick="window.appLogout()" title="Sign Out" style="background: rgba(255,255,255,0.1); color: #fff; border: none; border-radius: 8px; width: 32px; height: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        </button>
+      </div>
+    </nav>
+
+    <!-- MAIN -->
+    <div class="main">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="menu-btn" id="menuBtn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+          <div class="topbar-title" id="pageTitle">Dashboard</div>
+        </div>
+        <div class="topbar-right">
+          <div class="topbar-date" id="todayDate"></div>
+          <button class="dark-toggle" id="darkToggle">Dark Mode</button>
+        </div>
+      </header>
+
+      <div class="content" id="contentArea">
+        <!-- Dynamic content rendered here -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     MODALS
+     ============================================================ -->
+
+<!-- Employee Modal -->
+<div class="modal-overlay" id="empModal">
+  <div class="modal modal-lg">
+    <div class="modal-inner">
+      <div class="modal-hdr">
+        <h3 id="empModalTitle">Add Employee</h3>
+        <button class="modal-close-btn" onclick="closeModal('empModal')">&#10005;</button>
+      </div>
+      <input type="hidden" id="em-id">
+      <div class="form-grid">
+        <div class="form-divider col-span-2"><span>Personal Information</span></div>
+        <div class="form-group">
+          <label>Full Name <span class="req">*</span></label>
+          <input type="text" id="em-name" placeholder="e.g. John Kamau">
+        </div>
+        <div class="form-group">
+          <label>Email Address <span class="req">*</span></label>
+          <input type="email" id="em-email" placeholder="e.g. john@example.com">
+        </div>
+        <div class="form-group">
+          <label>National ID <span class="req">*</span></label>
+          <input type="text" id="em-idnum" placeholder="e.g. 12345678">
+        </div>
+        <div class="form-group">
+          <label>KRA PIN <span class="req">*</span></label>
+          <input type="text" id="em-kra" placeholder="e.g. A001234567B">
+        </div>
+        <div class="form-group">
+          <label>NSSF Number</label>
+          <input type="text" id="em-nssf" placeholder="NSSF Number">
+        </div>
+        <div class="form-group">
+          <label>SHIF Number</label>
+          <input type="text" id="em-nhif" placeholder="SHIF Number">
+        </div>
+        <div class="form-group">
+          <label>Phone Number</label>
+          <input type="tel" id="em-phone" placeholder="+254 712 345 678">
+        </div>
+        <div class="form-group">
+          <label>Employee Code</label>
+          <input type="text" id="em-code" placeholder="e.g. EMP-001">
+        </div>
+
+        <div class="form-divider col-span-2"><span>Job Information</span></div>
+        <div class="form-group">
+          <label>Job Title <span class="req">*</span></label>
+          <input type="text" id="em-title" placeholder="e.g. Software Developer">
+        </div>
+        <div class="form-group">
+          <label>Department <span class="req">*</span></label>
+          <select id="em-dept">
+            <option value="">Select Department</option>
+            <option value="ICT">ICT</option>
+            <option value="Finance">Finance</option>
+            <option value="HR">Human Resources</option>
+            <option value="Marketing">Marketing</option>
+            <option value="Operations">Operations</option>
+            <option value="Sales">Sales</option>
+            <option value="Legal">Legal</option>
+            <option value="Administration">Administration</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Branch</label>
+          <select id="em-branch">
+            <option value="">Select Branch</option>
+            <option value="Head Office">Head Office</option>
+            <option value="Nairobi">Nairobi</option>
+            <option value="Mombasa">Mombasa</option>
+            <option value="Kisumu">Kisumu</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Employment Type</label>
+          <select id="em-employment-type">
+            <option value="Permanent">Permanent</option>
+            <option value="Contract">Contract</option>
+            <option value="Intern">Intern</option>
+            <option value="Probation">Probation</option>
+            <option value="Casual">Casual</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Date Hired</label>
+          <input type="date" id="em-hired">
+        </div>
+        <div class="form-group">
+          <label>Location</label>
+          <input type="text" id="em-location" placeholder="e.g. Nairobi" value="Nairobi">
+        </div>
+
+        <div class="form-divider col-span-2"><span>Salary & Allowances</span></div>
+        <div class="form-group">
+          <label>Basic Salary (KES) <span class="req">*</span></label>
+          <input type="number" id="em-salary" placeholder="e.g. 50000" min="0">
+          <div id="em-salary-fmt" style="font-size:11px; color:var(--brand-primary); font-weight:600; margin-top:2px; height:14px;"></div>
+        </div>
+        <div class="form-group">
+          <label>House Allowance (KES)</label>
+          <input type="number" id="em-house" value="0" min="0">
+        </div>
+        <div class="form-group">
+          <label>Transport Allowance (KES)</label>
+          <input type="number" id="em-transport" value="0" min="0">
+        </div>
+        <div class="form-group">
+          <label>Bonus (KES)</label>
+          <input type="number" id="em-bonus" value="0" min="0">
+        </div>
+
+        <div class="form-group col-span-2" style="background:var(--bg-2); padding:12px; border-radius:10px; border:1px dashed var(--border); margin-top:4px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:11px; font-weight:700; color:var(--text-3); text-transform:uppercase; letter-spacing:0.5px;">Estimated Monthly Gross</span>
+            <span id="em-live-gross" style="font-size:16px; font-weight:800; color:var(--success); font-family:var(--font-mono);">KES 0.00</span>
+          </div>
+        </div>
+
+        <div class="form-divider col-span-2"><span>Payment Details</span></div>
+        <div class="form-group">
+          <label>Payment Mode</label>
+          <select id="em-paymode">
+            <option value="Bank Transfer">Bank Transfer</option>
+            <option value="M-Pesa">M-Pesa</option>
+            <option value="Cash">Cash</option>
+            <option value="Cheque">Cheque</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Bank Name</label>
+          <input type="text" id="em-bank" placeholder="e.g. KCB Bank Kenya">
+        </div>
+        <div class="form-group col-span-2">
+          <label>Account Number</label>
+          <input type="text" id="em-account" placeholder="e.g. 1234567890">
+        </div>
+
+        <div class="form-divider col-span-2"><span>Emergency Contact</span></div>
+        <div class="form-group">
+          <label>Emergency Name</label>
+          <input type="text" id="em-emergency-name" placeholder="Next of kin">
+        </div>
+        <div class="form-group">
+          <label>Emergency Phone</label>
+          <input type="tel" id="em-emergency-phone" placeholder="+254 712 345 678">
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-outline" onclick="closeModal('empModal')">Cancel</button>
+        <button class="btn btn-primary" id="saveEmpBtn">Save Employee</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Payroll Generator Modal -->
+<div class="modal-overlay" id="payrollModal">
+  <div class="modal modal-lg">
+    <div class="modal-inner">
+      <div class="modal-hdr">
+        <h3>Generate Payroll</h3>
+        <button class="modal-close-btn" onclick="closeModal('payrollModal')">&#10005;</button>
+      </div>
+      <div class="calc-inputs">
+        <div class="form-group">
+          <label>Select Employee <span class="req">*</span></label>
+          <select id="py-emp"><option value="">-- Select Employee --</option></select>
+        </div>
+        <div class="form-group">
+          <label>Month</label>
+          <select id="py-month">
+            <option>January</option><option>February</option><option>March</option>
+            <option>April</option><option>May</option><option>June</option>
+            <option>July</option><option>August</option><option>September</option>
+            <option>October</option><option>November</option><option>December</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Year</label>
+          <input type="number" id="py-year" value="2025" min="2020" max="2035">
+        </div>
+      </div>
+      <div id="py-extra-inputs" style="display:none;">
+        <div class="calc-extras">
+          <!-- ADDITIONS SECTION -->
+          <div class="form-divider col-span-2" style="margin-top: 16px;"><span>Additions (Increases Pay)</span></div>
+          <div class="form-group">
+            <label>Overtime (KES)</label>
+            <input type="number" id="py-ot" value="0" min="0" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label>Bonus Name</label>
+            <input type="text" id="py-bonus-name" value="Bonus" placeholder="e.g. Performance Bonus">
+          </div>
+          <div class="form-group">
+            <label>Bonus Amount (KES)</label>
+            <input type="number" id="py-bonus-val" value="0" min="0" placeholder="0">
+          </div>
+          
+          <!-- DEDUCTIONS SECTION -->
+          <div class="form-divider col-span-2" style="margin-top: 16px;"><span>Deductions (Reduces Pay)</span></div>
+          <div class="form-group">
+            <label>Salary Advance (KES)</label>
+            <input type="number" id="py-adv" value="0" min="0" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label>HELB Loan (KES)</label>
+            <input type="number" id="py-helb" value="0" min="0" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label>Other Deduction Name</label>
+            <input type="text" id="py-other-name" value="Other Deductions" placeholder="e.g. Union Dues">
+          </div>
+          <div class="form-group">
+            <label>Other Deduction Amount (KES)</label>
+            <input type="number" id="py-other" value="0" min="0" placeholder="0">
+          </div>
+        </div>
+        <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border);">
+          <button class="btn btn-primary btn-block" id="calcBtn" style="padding: 12px 24px; font-size: 15px;">Calculate Payroll</button>
+        </div>
+      </div>
+      <div id="py-result" style="display:none;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Payslip Preview Modal -->
+<div class="modal-overlay" id="slipModal">
+  <div class="modal modal-xl">
+    <div class="modal-inner">
+      <div class="modal-hdr">
+        <h3>Payslip Preview</h3>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button class="btn btn-primary btn-sm" id="sendEmailBtn">Send via Email</button>
+          <button class="btn btn-success btn-sm" id="dlPDFBtn">Download PDF</button>
+          <button class="modal-close-btn" onclick="closeModal('slipModal')">&#10005;</button>
+        </div>
+      </div>
+      <div id="slipPreview"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Company Settings Modal -->
+<div class="modal-overlay" id="settingsModal">
+  <div class="modal modal-lg">
+    <div class="modal-inner">
+      <div class="modal-hdr">
+        <h3>Company Settings</h3>
+        <button class="modal-close-btn" onclick="closeModal('settingsModal')">&#10005;</button>
+      </div>
+      <div class="form-grid">
+        <div class="form-divider col-span-2"><span>Company Information</span></div>
+        <div class="form-group">
+          <label>Company Name</label>
+          <input type="text" id="set-name">
+        </div>
+        <div class="form-group">
+          <label>Company Email</label>
+          <input type="email" id="set-email">
+        </div>
+        <div class="form-group">
+          <label>Phone</label>
+          <input type="tel" id="set-phone">
+        </div>
+        <div class="form-group">
+          <label>Website</label>
+          <input type="text" id="set-website">
+        </div>
+        <div class="form-group col-span-2">
+          <label>Address</label>
+          <input type="text" id="set-address">
+        </div>
+        <div class="form-divider col-span-2"><span>Statutory Information</span></div>
+        <div class="form-group">
+          <label>KRA PIN</label>
+          <input type="text" id="set-kra">
+        </div>
+        <div class="form-group">
+          <label>NSSF Number</label>
+          <input type="text" id="set-nssf">
+        </div>
+        <div class="form-group">
+          <label>SHIF Number</label>
+          <input type="text" id="set-shif">
+        </div>
+        <div class="form-group">
+          <label>Housing Levy Number</label>
+          <input type="text" id="set-housing">
+        </div>
+        <div class="form-divider col-span-2"><span>Branding</span></div>
+        <div class="form-group col-span-2">
+          <label>Company Logo</label>
+          <input type="file" id="set-logo" accept="image/*" style="padding: 8px 0;">
+          <div id="logo-preview" style="margin-top: 8px; max-height: 80px; overflow: hidden; display: none;">
+            <img id="logo-preview-img" style="max-height: 80px; max-width: 200px; object-fit: contain;" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Primary Color</label>
+          <input type="color" id="set-primary" value="#6366F1">
+        </div>
+        <div class="form-group">
+          <label>Secondary Color</label>
+          <input type="color" id="set-secondary" value="#F59E0B">
+        </div>
+        <div class="form-group col-span-2">
+          <label>Payslip Footer</label>
+          <input type="text" id="set-footer" value="Powered by Prince Alex Digital">
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-outline" onclick="closeModal('settingsModal')">Cancel</button>
+        <button class="btn btn-primary" id="saveSettingsBtn">Save Settings</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- User Invite Modal -->
+<div class="modal-overlay" id="userModal">
+  <div class="modal" style="max-width: 500px;">
+    <div class="modal-inner">
+      <div class="modal-hdr">
+        <h3>Invite User</h3>
+        <button class="modal-close-btn" onclick="closeModal('userModal')">&#10005;</button>
+      </div>
+      <div class="form-grid">
+        <div class="form-group col-span-2">
+          <label>Full Name <span style="color:#EF4444;">*</span></label>
+          <input type="text" id="user-name" placeholder="e.g. Jane Doe">
+        </div>
+        <div class="form-group col-span-2">
+          <label>Email Address <span style="color:#EF4444;">*</span></label>
+          <input type="email" id="user-email" placeholder="e.g. jane@company.com">
+        </div>
+        <div class="form-group col-span-2">
+          <label>Role <span style="color:#EF4444;">*</span></label>
+          <select id="user-role">
+            <option value="admin">Administrator</option>
+            <option value="hr">HR Manager</option>
+            <option value="finance">Finance</option>
+            <option value="payroll_officer">Payroll Officer</option>
+            <option value="manager">Manager</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-outline" onclick="closeModal('userModal')">Cancel</button>
+        <button class="btn btn-primary" id="saveUserBtn">Send Invitation</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     MAIN APPLICATION SCRIPT
+     ============================================================ -->
+<script type="module">
+  // ============================================================
+  // IMPORTS
+  // ============================================================
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import {
+    getFirestore, collection, addDoc, updateDoc, deleteDoc,
+    doc, onSnapshot, query, orderBy, where, getDocs, getDoc, setDoc,
+    limit
+  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import {
+    getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut,
+    sendPasswordResetEmail, GoogleAuthProvider, signInWithPopup,
+    createUserWithEmailAndPassword
+  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  
+  // Google Auth Provider configuration
+  const googleProvider = new GoogleAuthProvider();
+  googleProvider.addScope('profile');
+  googleProvider.addScope('email');
+
+  // ============================================================
+  // FIREBASE INIT
+  // ============================================================
+  const firebaseConfig = {
+    apiKey: "AIzaSyCJCrnatvZHLCz0CNm21MHzmIIBFVix0Io",
+    authDomain: "prince-alex-payroll.firebaseapp.com",
+    projectId: "prince-alex-payroll",
+    storageBucket: "prince-alex-payroll.firebasestorage.app",
+    messagingSenderId: "344752223450",
+    appId: "1:344752223450:web:4238c90da59e5ef938e1e3"
+  };
+
+  const fbApp = initializeApp(firebaseConfig);
+  const db = getFirestore(fbApp);
+  const auth = getAuth(fbApp);
+
+  // ============================================================
+  // CONSTANTS
+  // ============================================================
+  const COLLECTIONS = {
+    COMPANIES: 'companies',
+    USERS: 'users',
+    COMPANY_USERS: 'companyUsers',
+    EMPLOYEES: 'employees',
+    DEPARTMENTS: 'departments',
+    PAYROLL: 'payroll',
+    SETTINGS: 'settings',
+    AUDIT_LOGS: 'auditLogs',
+    SUBSCRIPTIONS: 'subscriptions',
+    PAYMENTS: 'payments',
+    MAIL: 'mail',
+    SYSTEM_CONFIG: 'systemConfig',
+    LEADS: 'leads'
+  };
+
+  const ROLES = {
+    SYSTEM_OWNER: 'system_owner',
+    ADMIN: 'admin',
+    HR: 'hr',
+    FINANCE: 'finance',
+    PAYROLL_OFFICER: 'payroll_officer',
+    MANAGER: 'manager',
+    EMPLOYEE: 'employee'
+  };
+
+  const NAV_ITEMS = {
+    [ROLES.SYSTEM_OWNER]: [
+      { id: 'dashboard', icon: 'D', label: 'Dashboard', category: 'Overview' },
+      { id: 'companies', icon: 'C', label: 'Companies', category: 'Management' },
+      { id: 'subscriptions', icon: 'S', label: 'Subscriptions', category: 'Management' },
+      { id: 'payments', icon: 'P', label: 'Payments', category: 'Management' },
+      { id: 'analytics', icon: 'A', label: 'Analytics', category: 'Insights' },
+      { id: 'audit-logs', icon: 'L', label: 'Audit Logs', category: 'Insights' },
+      { id: 'settings', icon: 'S', label: 'System Settings', category: 'System' }
+    ],
+    [ROLES.ADMIN]: [
+      { id: 'dashboard', icon: 'D', label: 'Dashboard', category: 'Overview' },
+      { id: 'employees', icon: 'E', label: 'Employees', category: 'HR' },
+      { id: 'payroll', icon: 'P', label: 'Payroll', category: 'Finance' },
+      { id: 'payslips', icon: 'S', label: 'Payslips', category: 'Finance' },
+      { id: 'reports', icon: 'R', label: 'Reports', category: 'Finance' },
+      { id: 'users', icon: 'U', label: 'Users', category: 'Management' },
+      { id: 'settings', icon: 'S', label: 'Settings', category: 'System' }
+    ],
+    [ROLES.HR]: [
+      { id: 'dashboard', icon: 'D', label: 'Dashboard', category: 'Overview' },
+      { id: 'employees', icon: 'E', label: 'Employees', category: 'HR' },
+      { id: 'payslips', icon: 'S', label: 'Payslips', category: 'Finance' },
+      { id: 'reports', icon: 'R', label: 'Reports', category: 'Finance' }
+    ],
+    [ROLES.FINANCE]: [
+      { id: 'dashboard', icon: 'D', label: 'Dashboard', category: 'Overview' },
+      { id: 'payroll', icon: 'P', label: 'Payroll', category: 'Finance' },
+      { id: 'payslips', icon: 'S', label: 'Payslips', category: 'Finance' },
+      { id: 'reports', icon: 'R', label: 'Reports', category: 'Finance' }
+    ],
+    [ROLES.PAYROLL_OFFICER]: [
+      { id: 'dashboard', icon: 'D', label: 'Dashboard', category: 'Overview' },
+      { id: 'employees', icon: 'E', label: 'Employees', category: 'HR' },
+      { id: 'payroll', icon: 'P', label: 'Payroll', category: 'Finance' },
+      { id: 'payslips', icon: 'S', label: 'Payslips', category: 'Finance' },
+      { id: 'reports', icon: 'R', label: 'Reports', category: 'Finance' }
+    ],
+    [ROLES.MANAGER]: [
+      { id: 'dashboard', icon: 'D', label: 'Dashboard', category: 'Overview' },
+      { id: 'employees', icon: 'E', label: 'Employees', category: 'HR' },
+      { id: 'payslips', icon: 'S', label: 'Payslips', category: 'Finance' }
+    ],
+    [ROLES.EMPLOYEE]: [
+      { id: 'profile', icon: 'P', label: 'My Profile', category: 'Overview' },
+      { id: 'my-payslips', icon: 'S', label: 'My Payslips', category: 'Finance' },
+      { id: 'tax-summary', icon: 'T', label: 'Tax Summary', category: 'Finance' }
+    ]
+  };
+
+  // ============================================================
+  // STATE
+  // =============================================================
+  let currentUser = null;
+  let currentUserRole = ROLES.ADMIN;
+  let currentCompanyId = null;
+  let currentCompany = null;
+  let employees = [];
+  let payrollRecords = [];
+  let activeSlipData = null;
+  let editingPayrollId = null;
+  let unsubscribers = [];
+  let charts = {};
+  let skipAuthRouting = false; // Flag to prevent auth observer from routing during user creation
+
+  // ============================================================
+  // UTILITY FUNCTIONS
+  // ============================================================
+  function fmtKES(n) {
+    const v = parseFloat(n) || 0;
+    return 'KES ' + v.toLocaleString('en-KE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function toast(msg, type = 'success') {
+    const zone = document.getElementById('toastZone');
+    const el = document.createElement('div');
+    el.className = `toast toast-${type}`;
+    el.innerHTML = `<span>${msg}</span>`;
+    zone.appendChild(el);
+    setTimeout(() => { el.style.opacity = '0'; el.style.transform = 'translateX(100px)'; setTimeout(() => el.remove(), 300); }, 10000);
+  }
+
+  // Friendly error message mapper
+  function getFriendlyErrorMessage(errorCode, defaultMsg) {
+    const messages = {
+      'auth/invalid-credential': 'The email or password you entered is incorrect. Please try again.',
+      'auth/user-not-found': 'No account found with this email address. Please check your email or create a new account.',
+      'auth/wrong-password': 'Incorrect password. Please try again or use "Forgot Password" to reset it.',
+      'auth/email-already-in-use': 'An account with this email already exists. Please sign in instead.',
+      'auth/weak-password': 'Password is too weak. Please use at least 8 characters with a mix of letters and numbers.',
+      'auth/invalid-email': 'Please enter a valid email address (e.g., you@company.com).',
+      'auth/too-many-requests': 'Too many failed attempts. Please wait a few minutes and try again.',
+      'auth/network-request-failed': 'Network error. Please check your internet connection and try again.',
+      'auth/popup-closed-by-user': 'Sign-in was cancelled. Please try again.',
+      'auth/configuration-not-found': 'Firebase Authentication is not enabled. Please contact the administrator or check Firebase Console.',
+      'permission-denied': 'You don\'t have permission to perform this action. Contact your administrator.',
+      'not-found': 'The requested information was not found. It may have been deleted or moved.',
+      'already-exists': 'This record already exists. Please check and try again.',
+      'unauthenticated': 'Please sign in to continue. Your session may have expired.',
+      'internal': 'Something went wrong on our end. Please try again in a moment.',
+      'deadline-exceeded': 'The request took too long. Please check your connection and try again.'
+    };
+    return messages[errorCode] || defaultMsg || 'An unexpected error occurred. Please try again or contact support.';
+  }
+
+  // Friendly success message enhancer
+  function getFriendlySuccessMessage(action) {
+    const messages = {
+      'employee_add': 'Employee added successfully! They can now be included in payroll.',
+      'employee_update': 'Employee information updated successfully.',
+      'employee_delete': 'Employee record deleted. This action cannot be undone.',
+      'payroll_save': 'Payroll record saved! You can now generate the payslip.',
+      'payroll_update': 'Payroll record updated successfully.',
+      'payroll_delete': 'Payroll record deleted successfully.',
+      'payslip_send': 'Payslip has been queued for delivery via email.',
+      'payslip_download': 'PDF downloaded successfully! Check your downloads folder.',
+      'settings_save': 'Company settings saved! Changes will take effect immediately.',
+      'company_register': 'Account created successfully! Please sign in with your credentials.',
+      'login_success': 'Welcome back! Loading your dashboard...',
+      'logout': 'You have been signed out successfully.',
+      'export': 'Export completed! Your file is ready for download.',
+      'report_generate': 'Report generated and downloaded successfully!'
+    };
+    return messages[action] || 'Operation completed successfully!';
+  }
+
+  window.closeModal = (id) => document.getElementById(id).classList.remove('open');
+  const openModal = (id) => document.getElementById(id).classList.add('open');
+
+  document.querySelectorAll('.modal-overlay').forEach(o => {
+    o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); });
+  });
+
+  function getInitials(name) {
+    return (name || '?').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+  }
+
+  function getMonthName(index) {
+    const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    return months[index] || months[0];
+  }
+
+  // ============================================================
+  // KENYA PAYROLL CALCULATIONS (PRESERVED)
+  // ============================================================
+  function calculateNSSF(basicSalary) {
+    const LEL = 7000, UEL = 36000;
+    let tierI = 0, tierII = 0;
+    if (basicSalary <= LEL) { tierI = basicSalary * 0.06; }
+    else { tierI = LEL * 0.06; tierII = (Math.min(basicSalary, UEL) - LEL) * 0.06; }
+    return { tierI, tierII, total: tierI + tierII };
+  }
+
+  function calculateSHIF(grossPay) { return grossPay * 0.0275; }
+  function calculateHousingLevy(grossPay) { return grossPay * 0.015; }
+
+  function calculatePAYE(taxableIncome) {
+    if (taxableIncome <= 0) return { incomeTax: 0, personalRelief: 2400, paye: 0 };
+    let tax = 0;
+    if (taxableIncome <= 24000) tax = taxableIncome * 0.10;
+    else if (taxableIncome <= 32333) tax = 24000 * 0.10 + (taxableIncome - 24000) * 0.25;
+    else tax = 24000 * 0.10 + 8333 * 0.25 + (taxableIncome - 32333) * 0.30;
+    const personalRelief = 2400;
+    const paye = Math.max(0, tax - personalRelief);
+    return { incomeTax: tax, personalRelief, paye };
+  }
+
+  function calculatePayroll(emp, overtime = 0, bonus = 0, advance = 0, helb = 0, otherDeductions = 0) {
+    const basic = parseFloat(emp.salary) || 0;
+    const house = parseFloat(emp.house) || 0;
+    const transport = parseFloat(emp.transport) || 0;
+    const grossPay = basic + house + transport + bonus + overtime;
+    const nssf = calculateNSSF(basic);
+    const shif = calculateSHIF(grossPay);
+    const housingLevy = calculateHousingLevy(grossPay);
+    const totalBfTax = nssf.total + shif + housingLevy;
+    const taxableIncome = Math.max(0, grossPay - totalBfTax);
+    const { incomeTax, personalRelief, paye } = calculatePAYE(taxableIncome);
+    const grossAfterTax = grossPay - totalBfTax - paye;
+    const totalAfTax = advance + helb + otherDeductions;
+    const netPay = grossAfterTax - totalAfTax;
+    return { basic, house, transport, bonus, overtime, grossPay, nssfTierI: nssf.tierI, nssfTierII: nssf.tierII, nssfTotal: nssf.total, shif, housingLevy, totalBfTax, taxableIncome, incomeTax, personalRelief, paye, grossAfterTax, advance, helb, otherDeductions, totalAfTax, netPay };
+  }
+
+  // ============================================================
+  // NAVIGATION & ROUTING
+  // ============================================================
+  function buildNavigation(role) {
+    const items = NAV_ITEMS[role] || NAV_ITEMS[ROLES.ADMIN];
+    const container = document.getElementById('navContainer');
+    let html = '';
+    let lastCategory = '';
+
+    items.forEach(item => {
+      if (item.category !== lastCategory) {
+        html += `<div class="nav-category">${item.category}</div>`;
+        lastCategory = item.category;
+      }
+      html += `<div class="nav-item${item.id === 'dashboard' ? ' active' : ''}" data-nav="${item.id}">
+        <span class="ni">${item.icon}</span> ${item.label}
+      </div>`;
+    });
+
+    container.innerHTML = html;
+
+    document.querySelectorAll('.nav-item').forEach(el => {
+      el.addEventListener('click', () => navigate(el.dataset.nav));
+    });
+  }
+
+  const navTitles = {
+    dashboard: 'Dashboard',
+    employees: 'Employees',
+    payroll: 'Payroll',
+    payslips: 'Payslips',
+    reports: 'Reports',
+    settings: 'Settings',
+    companies: 'Companies',
+    subscriptions: 'Subscriptions',
+    payments: 'Payments',
+    analytics: 'Analytics',
+    'audit-logs': 'Audit Logs',
+    users: 'Users',
+    profile: 'My Profile',
+    'my-payslips': 'My Payslips',
+    'tax-summary': 'Tax Summary'
+  };
+
+  function navigate(section) {
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.nav === section));
+    document.getElementById('pageTitle').textContent = navTitles[section] || 'Dashboard';
+    if (window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('open');
+    renderSection(section);
+  }
+
+  // ============================================================
+  // SECTION RENDERER
+  // ============================================================
+  function renderSection(section) {
+    const area = document.getElementById('contentArea');
+
+    switch (section) {
+      case 'dashboard': renderDashboard(area); break;
+      case 'employees': renderEmployees(area); break;
+      case 'payroll': renderPayroll(area); break;
+      case 'payslips': renderPayslips(area); break;
+      case 'reports': renderReports(area); break;
+      case 'settings': renderSettings(area); break;
+      case 'companies': renderCompanies(area); break;
+      case 'subscriptions': renderSubscriptions(area); break;
+      case 'payments': renderPayments(area); break;
+      case 'analytics': renderAnalytics(area); break;
+      case 'audit-logs': renderAuditLogs(area); break;
+      case 'users': renderUsers(area); break;
+      case 'profile': renderProfile(area); break;
+      case 'my-payslips': renderMyPayslips(area); break;
+      case 'tax-summary': renderTaxSummary(area); break;
+      default: renderDashboard(area);
+    }
+  }
+
+  // ============================================================
+  // DASHBOARD
+  // ============================================================
+  function renderDashboard(area) {
+    if (currentUserRole === ROLES.SYSTEM_OWNER) {
+      renderOwnerDashboard(area);
+    } else if (currentUserRole === ROLES.EMPLOYEE) {
+      renderEmployeeDashboard(area);
+    } else {
+      renderAdminDashboard(area);
+    }
+  }
+
+  function renderAdminDashboard(area) {
+    const totalGross = payrollRecords.reduce((s, p) => s + (parseFloat(p.grossPay) || 0), 0);
+    const totalDed = payrollRecords.reduce((s, p) => s + (parseFloat(p.totalBfTax) || 0) + (parseFloat(p.paye) || 0) + (parseFloat(p.totalAfTax) || 0), 0);
+    const totalNet = payrollRecords.reduce((s, p) => s + (parseFloat(p.netPay) || 0), 0);
+
+    area.innerHTML = `
+      <div class="cards-grid">
+        <div class="stat-card sc-blue">
+          <div class="stat-icon">E</div>
+          <div class="stat-label">Total Employees</div>
+          <div class="stat-value" id="d-employees">${employees.length}</div>
+          <div class="stat-sub">Active staff members</div>
+        </div>
+        <div class="stat-card sc-green">
+          <div class="stat-icon">P</div>
+          <div class="stat-label">Total Payroll Cost</div>
+          <div class="stat-value" id="d-gross">${fmtKES(totalGross)}</div>
+          <div class="stat-sub">Gross pay (all records)</div>
+        </div>
+        <div class="stat-card sc-red">
+          <div class="stat-icon">D</div>
+          <div class="stat-label">Total Deductions</div>
+          <div class="stat-value" id="d-deductions">${fmtKES(totalDed)}</div>
+          <div class="stat-sub">Tax & statutory charges</div>
+        </div>
+        <div class="stat-card sc-amber">
+          <div class="stat-icon">N</div>
+          <div class="stat-label">Net Pay Summary</div>
+          <div class="stat-value" id="d-net">${fmtKES(totalNet)}</div>
+          <div class="stat-sub">Total take-home pay</div>
+        </div>
+      </div>
+
+      <div class="quick-actions">
+        <div class="quick-action" onclick="navigate('employees')">
+          <span class="qa-icon">E</span>
+          <span class="qa-label">Employees</span>
+        </div>
+        <div class="quick-action" onclick="navigate('payroll')">
+          <span class="qa-icon">P</span>
+          <span class="qa-label">Payroll</span>
+        </div>
+        <div class="quick-action" onclick="navigate('payslips')">
+          <span class="qa-icon">S</span>
+          <span class="qa-label">Payslips</span>
+        </div>
+        <div class="quick-action" onclick="navigate('reports')">
+          <span class="qa-icon">R</span>
+          <span class="qa-label">Reports</span>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <div class="table-head">
+          <h3>Recent Payroll Records</h3>
+          <button class="btn btn-ghost btn-sm" onclick="navigate('payroll')">View All &rarr;</button>
+        </div>
+        <div id="dash-recent">${buildRecentPayrollTable()}</div>
+      </div>
+    `;
+  }
+
+  function buildRecentPayrollTable() {
+    const recent = payrollRecords.slice(0, 7);
+    if (!recent.length) {
+      return `<div class="empty-state"><span class="es-icon">D</span><p>No payroll records yet</p><small>Start by adding employees and running payroll</small></div>`;
+    }
+    return `
+      <table>
+        <thead><tr><th>Employee</th><th>Period</th><th>Gross Pay</th><th>Deductions</th><th>Net Pay</th></tr></thead>
+        <tbody>
+          ${recent.map(p => {
+            const d = (p.totalBfTax || 0) + (p.paye || 0) + (p.totalAfTax || 0);
+            return `<tr>
+              <td><strong>${p.employeeName}</strong><br><small style="color:var(--text-muted)">${p.dept || ''}</small></td>
+              <td><span class="badge badge-blue">${p.month} ${p.year}</span></td>
+              <td style="font-family:var(--font-mono);font-size:12.5px;">${fmtKES(p.grossPay)}</td>
+              <td style="font-family:var(--font-mono);font-size:12.5px;color:var(--danger);">${fmtKES(d)}</td>
+              <td style="font-family:var(--font-mono);font-weight:700;color:var(--success);font-size:13px;">${fmtKES(p.netPay)}</td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>`;
+  }
+
+  // ============================================================
+  // OWNER DASHBOARD
+  // ============================================================
+  function renderOwnerDashboard(area) {
+    area.innerHTML = `
+      <div class="cards-grid">
+        <div class="stat-card sc-blue">
+          <div class="stat-icon">C</div>
+          <div class="stat-label">Total Companies</div>
+          <div class="stat-value" id="od-total">0</div>
+          <div class="stat-sub">Registered companies</div>
+        </div>
+        <div class="stat-card sc-green">
+          <div class="stat-icon">A</div>
+          <div class="stat-label">Active</div>
+          <div class="stat-value" id="od-active">0</div>
+          <div class="stat-sub">Active subscriptions</div>
+        </div>
+        <div class="stat-card sc-amber">
+          <div class="stat-icon">T</div>
+          <div class="stat-label">Trial</div>
+          <div class="stat-value" id="od-trial">0</div>
+          <div class="stat-sub">Trial accounts</div>
+        </div>
+        <div class="stat-card sc-red">
+          <div class="stat-icon">R</div>
+          <div class="stat-label">Monthly Revenue</div>
+          <div class="stat-value" id="od-revenue">KES 0</div>
+          <div class="stat-sub">Current month</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="chart-container">
+          <h3>Revenue Overview</h3>
+          <div class="chart-box"><canvas id="revenueChart"></canvas></div>
+        </div>
+        <div class="chart-container">
+          <h3>Company Growth</h3>
+          <div class="chart-box"><canvas id="growthChart"></canvas></div>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <div class="table-head">
+          <h3>Latest Registrations</h3>
+        </div>
+        <div id="od-recent-companies">
+          <div class="loading-state"><div class="spinner"></div> Loading...</div>
+        </div>
+      </div>
+    `;
+
+    loadOwnerStats();
+  }
+
+  async function loadOwnerStats() {
+    try {
+      const companiesSnap = await getDocs(collection(db, COLLECTIONS.COMPANIES));
+      const companies = companiesSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+      
+      const total = companies.length;
+      const active = companies.filter(c => c.status === 'active').length;
+      const trial = companies.filter(c => c.subscriptionStatus === 'trial').length;
+      
+      document.getElementById('od-total').textContent = total;
+      document.getElementById('od-active').textContent = active;
+      document.getElementById('od-trial').textContent = trial;
+
+      // Recent companies
+      const recent = companies.slice(0, 10);
+      const container = document.getElementById('od-recent-companies');
+      if (!recent.length) {
+        container.innerHTML = `<div class="empty-state"><span class="es-icon">C</span><p>No companies registered yet</p></div>`;
+      } else {
+        container.innerHTML = `
+          <table>
+            <thead><tr><th>Company</th><th>Email</th><th>Status</th><th>Plan</th><th>Registered</th></tr></thead>
+            <tbody>
+              ${recent.map(c => `
+                <tr>
+                  <td><strong>${c.name}</strong></td>
+                  <td>${c.email || '—'}</td>
+                  <td><span class="badge ${c.status === 'active' ? 'badge-green' : 'badge-amber'}">${c.status}</span></td>
+                  <td><span class="badge badge-blue">${c.subscriptionId || 'starter'}</span></td>
+                  <td style="font-size:12px;color:var(--text-muted);">${new Date(c.createdAt).toLocaleDateString()}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>`;
+      }
+
+      // Charts
+      initOwnerCharts(companies);
+    } catch (err) {
+      console.error('Owner stats error:', err);
+    }
+  }
+
+  function initOwnerCharts(companies) {
+    // Revenue chart (mock data for now)
+    const revCtx = document.getElementById('revenueChart');
+    if (revCtx && !charts.revenue) {
+      charts.revenue = new Chart(revCtx, {
+        type: 'line',
+        data: {
+          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+          datasets: [{
+            label: 'Revenue (KES)',
+            data: [0, 0, 0, 0, 0, 0],
+            borderColor: '#6366F1',
+            backgroundColor: 'rgba(99,102,241,0.1)',
+            fill: true,
+            tension: 0.4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: { y: { beginAtZero: true, ticks: { callback: v => 'KES ' + v.toLocaleString() } } }
+        }
+      });
+    }
+
+    // Growth chart
+    const growthCtx = document.getElementById('growthChart');
+    if (growthCtx && !charts.growth) {
+      charts.growth = new Chart(growthCtx, {
+        type: 'bar',
+        data: {
+          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+          datasets: [{
+            label: 'New Companies',
+            data: [0, 0, 0, 0, 0, companies.length],
+            backgroundColor: '#10B981',
+            borderRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+        }
+      });
+    }
+  }
+
+  // ============================================================
+  // EMPLOYEES
+  // ============================================================
+  function renderEmployees(area) {
+    area.innerHTML = `
+      <div class="action-bar">
+        <button class="btn btn-primary" id="addEmpBtn">Add Employee</button>
+        <button class="btn btn-ghost" id="csvEmpBtn">Export CSV</button>
+        <div class="search-box" style="margin-left:auto;">
+          <span class="search-icon">&#128269;</span>
+          <input class="search-input" id="empSearch" type="text" placeholder="Search employees...">
+        </div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-head">
+          <h3>All Employees</h3>
+          <span id="emp-count" style="font-size:12px;color:var(--text-muted);">${employees.length} employees</span>
+        </div>
+        <div id="empTable">${buildEmployeeTable()}</div>
+      </div>
+    `;
+
+    document.getElementById('addEmpBtn').addEventListener('click', () => {
+      clearEmpForm();
+      document.getElementById('empModalTitle').textContent = 'Add Employee';
+      openModal('empModal');
+    });
+
+    document.getElementById('csvEmpBtn').addEventListener('click', exportEmployeesCSV);
+    document.getElementById('empSearch').addEventListener('input', e => filterEmployeeTable(e.target.value));
+  }
+
+  function buildEmployeeTable(filter = '') {
+    const f = filter.toLowerCase();
+    const list = employees.filter(e =>
+      !f || (e.name || '').toLowerCase().includes(f) || (e.dept || '').toLowerCase().includes(f) ||
+      (e.title || '').toLowerCase().includes(f) || (e.idNum || '').toLowerCase().includes(f) ||
+      (e.code || '').toLowerCase().includes(f)
+    );
+
+    if (!list.length) {
+      return `<div class="empty-state"><span class="es-icon">E</span><p>No employees found</p><small>Add your first employee to get started</small></div>`;
+    }
+
+    return `
+      <table>
+        <thead><tr>
+          <th>#</th><th>Name & ID</th><th>Title</th><th>Department</th>
+          <th>Basic Salary</th><th>Gross (Month)</th><th>Actions</th>
+        </tr></thead>
+        <tbody>
+          ${list.map((e, i) => {
+            const gross = (e.salary || 0) + (e.house || 0) + (e.transport || 0) + (e.bonus || 0);
+            return `<tr>
+              <td style="color:var(--text-muted);font-family:var(--font-mono);font-size:12px;">${String(i+1).padStart(2,'0')}</td>
+              <td>
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <div class="avatar" style="background:linear-gradient(135deg,#6366F1,#7C3AED);">${getInitials(e.name)}</div>
+                  <div>
+                    <div style="font-weight:600;">${e.name}</div>
+                    <div style="font-size:11px;color:var(--text-muted);font-family:var(--font-mono);">${e.idNum || '—'} · ${e.email || 'no email'}</div>
+                  </div>
+                </div>
+              </td>
+              <td>${e.title}</td>
+              <td><span class="badge badge-blue">${e.dept}</span></td>
+              <td style="font-family:var(--font-mono);font-size:12.5px;">${fmtKES(e.salary)}</td>
+              <td style="font-family:var(--font-mono);font-size:12.5px;font-weight:600;color:var(--success);">${fmtKES(gross)}</td>
+              <td>
+                <div style="display:flex;gap:6px;">
+                  <button class="btn btn-ghost btn-xs" onclick="editEmployee('${e.id}')">Edit</button>
+                  <button class="btn btn-xs" style="background:#FEE2E2;color:#DC2626;" onclick="deleteEmployee('${e.id}')">Del</button>
+                </div>
+              </td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>`;
+  }
+
+  function filterEmployeeTable(filter) {
+    const container = document.getElementById('empTable');
+    if (container) container.innerHTML = buildEmployeeTable(filter);
+  }
+
+  function clearEmpForm() {
+    const ids = ['em-id','em-name','em-email','em-idnum','em-kra','em-nssf','em-nhif','em-phone',
+                 'em-title','em-code','em-bank','em-account','em-emergency-name','em-emergency-phone'];
+    ids.forEach(i => { const el = document.getElementById(i); if (el) el.value = ''; });
+    document.getElementById('em-location').value = 'Nairobi';
+    document.getElementById('em-salary').value = '';
+    document.getElementById('em-house').value = '0';
+    document.getElementById('em-transport').value = '0';
+    document.getElementById('em-bonus').value = '0';
+    document.getElementById('em-paymode').value = 'Bank Transfer';
+    document.getElementById('em-dept').value = '';
+    document.getElementById('em-branch').value = '';
+    document.getElementById('em-employment-type').value = 'Permanent';
+    document.getElementById('em-hired').value = '';
+    updateLiveGross();
+  }
+
+  function getEmpFormData() {
+    return {
+      name: document.getElementById('em-name').value.trim(),
+      email: document.getElementById('em-email').value.trim(),
+      idNum: document.getElementById('em-idnum').value.trim(),
+      kra: document.getElementById('em-kra').value.trim(),
+      nssfNum: document.getElementById('em-nssf').value.trim(),
+      nhifNum: document.getElementById('em-nhif').value.trim(),
+      phone: document.getElementById('em-phone').value.trim(),
+      title: document.getElementById('em-title').value.trim(),
+      dept: document.getElementById('em-dept').value,
+      branch: document.getElementById('em-branch').value,
+      employmentType: document.getElementById('em-employment-type').value,
+      dateHired: document.getElementById('em-hired').value,
+      location: document.getElementById('em-location').value.trim() || 'Nairobi',
+      code: document.getElementById('em-code').value.trim(),
+      salary: parseFloat(document.getElementById('em-salary').value) || 0,
+      house: parseFloat(document.getElementById('em-house').value) || 0,
+      transport: parseFloat(document.getElementById('em-transport').value) || 0,
+      bonus: parseFloat(document.getElementById('em-bonus').value) || 0,
+      payMode: document.getElementById('em-paymode').value,
+      bank: document.getElementById('em-bank').value.trim(),
+      account: document.getElementById('em-account').value.trim(),
+      emergencyName: document.getElementById('em-emergency-name').value.trim(),
+      emergencyPhone: document.getElementById('em-emergency-phone').value.trim()
+    };
+  }
+
+  function updateLiveGross() {
+    const salary = parseFloat(document.getElementById('em-salary').value) || 0;
+    const house = parseFloat(document.getElementById('em-house').value) || 0;
+    const transport = parseFloat(document.getElementById('em-transport').value) || 0;
+    const bonus = parseFloat(document.getElementById('em-bonus').value) || 0;
+    const total = salary + house + transport + bonus;
+    const el = document.getElementById('em-live-gross');
+    if (el) el.textContent = fmtKES(total);
+    const fmt = document.getElementById('em-salary-fmt');
+    if (fmt) fmt.textContent = salary > 0 ? `(${fmtKES(salary)})` : '';
+  }
+
+  // Logo preview on file select
+  document.getElementById('set-logo')?.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    const preview = document.getElementById('logo-preview');
+    const img = document.getElementById('logo-preview-img');
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        img.src = ev.target.result;
+        preview.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    } else {
+      preview.style.display = 'none';
+    }
+  });
+
+  async function saveEmployee() {
+    const data = getEmpFormData();
+    if (!data.name || !data.email || !data.idNum || !data.kra || !data.title || !data.dept || !data.salary) {
+      toast('Please fill in all required fields marked with (*)', 'error'); return;
+    }
+
+    const editId = document.getElementById('em-id').value;
+    const isDuplicate = employees.some(e => e.id !== editId && (e.idNum === data.idNum || e.email.toLowerCase() === data.email.toLowerCase()));
+    if (isDuplicate) { toast('An employee with this ID number or email already exists. Please use unique values.', 'error'); return; }
+
+    data.updatedAt = new Date().toISOString();
+    try {
+      if (editId) {
+        await updateDoc(doc(db, COLLECTIONS.COMPANIES, currentCompanyId, COLLECTIONS.EMPLOYEES, editId), data);
+        toast(getFriendlySuccessMessage('employee_update'));
+      } else {
+        data.companyId = currentCompanyId;
+        data.createdAt = new Date().toISOString();
+        data.active = true;
+        await addDoc(collection(db, COLLECTIONS.COMPANIES, currentCompanyId, COLLECTIONS.EMPLOYEES), data);
+        toast(getFriendlySuccessMessage('employee_add'));
+      }
+      closeModal('empModal');
+      clearEmpForm();
+    } catch (err) { toast(getFriendlyErrorMessage(err.code, 'Failed to save employee. Please try again.'), 'error'); }
+  }
+
+  window.editEmployee = (id) => {
+    const emp = employees.find(e => e.id === id);
+    if (!emp) return;
+    document.getElementById('empModalTitle').textContent = 'Edit Employee';
+    document.getElementById('em-id').value = id;
+    document.getElementById('em-name').value = emp.name || '';
+    document.getElementById('em-email').value = emp.email || '';
+    document.getElementById('em-idnum').value = emp.idNum || '';
+    document.getElementById('em-kra').value = emp.kra || '';
+    document.getElementById('em-nssf').value = emp.nssfNum || '';
+    document.getElementById('em-nhif').value = emp.nhifNum || '';
+    document.getElementById('em-phone').value = emp.phone || '';
+    document.getElementById('em-title').value = emp.title || '';
+    document.getElementById('em-dept').value = emp.dept || '';
+    document.getElementById('em-branch').value = emp.branch || '';
+    document.getElementById('em-employment-type').value = emp.employmentType || 'Permanent';
+    document.getElementById('em-hired').value = emp.dateHired || '';
+    document.getElementById('em-location').value = emp.location || 'Nairobi';
+    document.getElementById('em-code').value = emp.code || '';
+    document.getElementById('em-salary').value = emp.salary || '';
+    document.getElementById('em-house').value = emp.house || 0;
+    document.getElementById('em-transport').value = emp.transport || 0;
+    document.getElementById('em-bonus').value = emp.bonus || 0;
+    document.getElementById('em-paymode').value = emp.payMode || 'Bank Transfer';
+    document.getElementById('em-bank').value = emp.bank || '';
+    document.getElementById('em-account').value = emp.account || '';
+    document.getElementById('em-emergency-name').value = emp.emergencyName || '';
+    document.getElementById('em-emergency-phone').value = emp.emergencyPhone || '';
+    updateLiveGross();
+    openModal('empModal');
+  };
+
+  window.deleteEmployee = async (id) => {
+    if (!confirm('Permanently delete this employee? This action cannot be undone.')) return;
+    try {
+      await deleteDoc(doc(db, COLLECTIONS.COMPANIES, currentCompanyId, COLLECTIONS.EMPLOYEES, id));
+      toast(getFriendlySuccessMessage('employee_delete'), 'info');
+    } catch (err) { toast(getFriendlyErrorMessage(err.code, 'Failed to delete employee. Please try again.'), 'error'); }
+  };
+
+  function exportEmployeesCSV() {
+    if (!employees.length) { toast('No employees to export', 'error'); return; }
+    const keys = ['name','email','idNum','kra','nssfNum','nhifNum','title','dept','salary','house','transport','bonus','bank','account','payMode'];
+    const csv = [keys.join(',')];
+    employees.forEach(e => {
+      csv.push(keys.map(k => `"${String(e[k] || '').replace(/"/g,'""')}"`).join(','));
+    });
+    const a = Object.assign(document.createElement('a'), {
+      href: URL.createObjectURL(new Blob([csv.join('\n')], { type: 'text/csv' })),
+      download: 'employees.csv'
+    });
+    a.click();
+    toast('Employees exported!');
+  }
+
+  // ============================================================
+  // PAYROLL
+  // ============================================================
+  function renderPayroll(area) {
+    area.innerHTML = `
+      <div class="action-bar">
+        <button class="btn btn-primary" id="genPayrollBtn">Generate Payroll</button>
+        <button class="btn btn-ghost" id="csvPayrollBtn">Export CSV</button>
+      </div>
+      <div class="table-wrap">
+        <div class="table-head">
+          <h3>Payroll Records</h3>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+            <div class="search-box">
+              <span class="search-icon">&#128269;</span>
+              <input class="search-input" id="payrollSearch" type="text" placeholder="Search records...">
+            </div>
+          </div>
+        </div>
+        <div id="payrollTable">${buildPayrollTable()}</div>
+      </div>
+    `;
+
+    document.getElementById('genPayrollBtn').addEventListener('click', () => {
+      editingPayrollId = null;
+      document.getElementById('py-emp').value = '';
+      document.getElementById('py-extra-inputs').style.display = 'none';
+      document.getElementById('py-result').style.display = 'none';
+      openModal('payrollModal');
+    });
+
+    document.getElementById('csvPayrollBtn').addEventListener('click', exportPayrollCSV);
+    document.getElementById('payrollSearch').addEventListener('input', e => filterPayrollTable(e.target.value));
+  }
+
+  function buildPayrollTable(filter = '') {
+    const f = filter.toLowerCase();
+    const list = payrollRecords.filter(p =>
+      !f || (p.employeeName || '').toLowerCase().includes(f) || (p.month || '').toLowerCase().includes(f) || String(p.year).includes(f)
+    );
+
+    if (!list.length) {
+      return `<div class="empty-state"><span class="es-icon">P</span><p>No payroll records</p><small>Calculate payroll above and save it</small></div>`;
+    }
+
+    return `
+      <table>
+        <thead><tr>
+          <th>Employee</th><th>Period</th><th>Gross Pay</th>
+          <th>PAYE</th><th>Total Ded.</th><th>Net Pay</th><th>Actions</th>
+        </tr></thead>
+        <tbody>
+          ${list.map(p => {
+            const totalDed = (p.totalBfTax || 0) + (p.paye || 0) + (p.totalAfTax || 0);
+            return `<tr>
+              <td><div style="font-weight:600;">${p.employeeName}</div><div style="font-size:11px;color:var(--text-muted);">${p.dept || ''}</div></td>
+              <td><span class="badge badge-blue">${p.month} ${p.year}</span></td>
+              <td style="font-family:var(--font-mono);font-size:12.5px;">${fmtKES(p.grossPay)}</td>
+              <td style="font-family:var(--font-mono);font-size:12.5px;color:var(--danger);">${fmtKES(p.paye)}</td>
+              <td style="font-family:var(--font-mono);font-size:12.5px;">${fmtKES(totalDed)}</td>
+              <td style="font-family:var(--font-mono);font-weight:700;color:var(--success);font-size:13px;">${fmtKES(p.netPay)}</td>
+              <td>
+                <div style="display:flex;gap:6px;">
+                  <button class="btn btn-ghost btn-xs" onclick="viewSlip('${p.id}')">Slip</button>
+                  <button class="btn btn-ghost btn-xs" onclick="editPayroll('${p.id}')">Edit</button>
+                  <button class="btn btn-xs" style="background:#FEE2E2;color:#DC2626;" onclick="deletePayroll('${p.id}')">Del</button>
+                </div>
+              </td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>`;
+  }
+
+  function filterPayrollTable(filter) {
+    const container = document.getElementById('payrollTable');
+    if (container) container.innerHTML = buildPayrollTable(filter);
+  }
+
+  function exportPayrollCSV() {
+    if (!payrollRecords.length) { toast('No payroll data to export', 'error'); return; }
+    const keys = ['employeeName','month','year','grossPay','nssfTotal','shif','housingLevy','paye','netPay'];
+    const csv = [keys.join(',')];
+    payrollRecords.forEach(p => {
+      csv.push(keys.map(k => `"${String(p[k] || '').replace(/"/g,'""')}"`).join(','));
+    });
+    const a = Object.assign(document.createElement('a'), {
+      href: URL.createObjectURL(new Blob([csv.join('\n')], { type: 'text/csv' })),
+      download: 'payroll.csv'
+    });
+    a.click();
+    toast('Payroll exported!');
+  }
+
+  // Payroll Modal Logic
+  function refreshEmployeeDropdown() {
+    const sel = document.getElementById('py-emp');
+    if (!sel) return;
+    const cur = sel.value;
+    sel.innerHTML = '<option value="">-- Select Employee --</option>';
+    employees.forEach(e => {
+      const o = document.createElement('option');
+      o.value = e.id;
+      o.textContent = `${e.name} — ${e.title}`;
+      sel.appendChild(o);
+    });
+    if (cur) sel.value = cur;
+  }
+
+  document.addEventListener('change', function(e) {
+    if (e.target.id === 'py-emp') {
+      const empId = e.target.value;
+      const emp = employees.find(emp => emp.id === empId);
+      if (emp) {
+        document.getElementById('py-bonus-val').value = emp.bonus || 0;
+      }
+      document.getElementById('py-extra-inputs').style.display = e.target.value ? 'block' : 'none';
+      document.getElementById('py-result').style.display = 'none';
+    }
+  });
+
+  document.addEventListener('click', function(e) {
+    if (e.target.id === 'calcBtn') {
+      const empId = document.getElementById('py-emp').value;
+      const emp = employees.find(emp => emp.id === empId);
+      if (!emp) { toast('Select an employee first', 'error'); return; }
+
+      const overtime = parseFloat(document.getElementById('py-ot').value) || 0;
+      const bonus = parseFloat(document.getElementById('py-bonus-val').value) || 0;
+      const bonusName = document.getElementById('py-bonus-name').value.trim() || 'Bonus';
+      const advance = parseFloat(document.getElementById('py-adv').value) || 0;
+      const helb = parseFloat(document.getElementById('py-helb').value) || 0;
+      const other = parseFloat(document.getElementById('py-other').value) || 0;
+      const otherName = document.getElementById('py-other-name').value.trim() || 'Other Deductions';
+      const month = document.getElementById('py-month').value;
+      const year = document.getElementById('py-year').value;
+
+      const calc = calculatePayroll(emp, overtime, bonus, advance, helb, other);
+      activeSlipData = { emp, calc, month, year, bonusName, otherName };
+
+      const resEl = document.getElementById('py-result');
+      resEl.style.display = 'block';
+      resEl.innerHTML = buildCalcResultHTML(calc, emp, month, year, bonusName, otherName);
+    }
+  });
+
+  document.addEventListener('click', async function(e) {
+    if (!activeSlipData) return;
+    const { emp, calc, month, year, bonusName, otherName } = activeSlipData;
+
+    if (e.target.id === 'btn-save-payroll' || e.target.closest('#btn-save-payroll')) {
+      try {
+        const payrollData = {
+          employeeId: emp.id, employeeName: emp.name, email: emp.email || '',
+          bonusName, otherDeductionsName: otherName,
+          title: emp.title, dept: emp.dept, code: emp.code || '',
+          idNum: emp.idNum || '', kra: emp.kra || '',
+          nssfNum: emp.nssfNum || '', nhifNum: emp.nhifNum || '',
+          bank: emp.bank || '', account: emp.account || '',
+          payMode: emp.payMode || 'Bank Transfer', location: emp.location || 'Nairobi',
+          month, year: parseInt(year), companyId: currentCompanyId,
+          ...calc, updatedAt: new Date().toISOString()
+        };
+
+        if (editingPayrollId) {
+          await updateDoc(doc(db, COLLECTIONS.COMPANIES, currentCompanyId, COLLECTIONS.PAYROLL, editingPayrollId), payrollData);
+          toast(getFriendlySuccessMessage('payroll_update'));
+        } else {
+          payrollData.createdAt = new Date().toISOString();
+          await addDoc(collection(db, COLLECTIONS.COMPANIES, currentCompanyId, COLLECTIONS.PAYROLL), payrollData);
+          toast(getFriendlySuccessMessage('payroll_save'));
+        }
+        closeModal('payrollModal');
+        editingPayrollId = null;
+      } catch (err) { toast('Error saving: ' + err.message, 'error'); }
+    }
+
+    if (e.target.id === 'btn-preview-slip' || e.target.closest('#btn-preview-slip')) {
+      closeModal('payrollModal');
+      showPayslip(emp, { ...calc, bonusName, otherDeductionsName: otherName }, month, year);
+    }
+  });
+
+  function buildCalcResultHTML(c, emp, month, year, bonusName, otherName) {
+    const row = (label, amount, cls = '') =>
+      `<div class="result-row ${cls}"><span>${label}</span><span class="amount">${fmtKES(amount)}</span></div>`;
+
+    return `
+    <div class="result-card">
+      <div class="result-header">
+        <h4>${emp.name} — ${month} ${year}</h4>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-success btn-sm" id="btn-save-payroll">Save Payroll</button>
+          <button class="btn btn-primary btn-sm" id="btn-preview-slip">Preview Payslip</button>
+        </div>
+      </div>
+      <div class="result-section">
+        <div class="result-section-label">Earnings</div>
+        ${row('Basic Pay', c.basic)}
+        ${row('House Allowance', c.house)}
+        ${row('Transport Allowance', c.transport)}
+        ${row(bonusName, c.bonus)}
+        ${row('Overtime', c.overtime)}
+        ${row('GROSS PAY', c.grossPay, 'subtotal')}
+      </div>
+      <div class="result-section">
+        <div class="result-section-label">Deductions Before Tax</div>
+        ${row('NSSF Tier I', c.nssfTierI)}
+        ${row('NSSF Tier II', c.nssfTierII)}
+        ${row('SHIF (2.75% of Gross)', c.shif)}
+        ${row('Housing Levy (1.5% of Gross)', c.housingLevy)}
+        ${row('Total Before Tax', c.totalBfTax, 'subtotal')}
+      </div>
+      <div class="result-section">
+        <div class="result-section-label">Tax (PAYE)</div>
+        <div class="result-row"><span>Taxable Pay (Gross − NSSF)</span><span class="amount">${fmtKES(c.taxableIncome)}</span></div>
+        <div class="result-row"><span>Income Tax (bands)</span><span class="amount">${fmtKES(c.incomeTax)}</span></div>
+        <div class="result-row" style="color:var(--success);"><span>Less: Personal Relief</span><span class="amount">+ ${fmtKES(c.personalRelief)}</span></div>
+        ${row('PAYE', c.paye, 'subtotal')}
+      </div>
+      <div class="result-section">
+        <div class="result-section-label">After Tax</div>
+        ${row('Gross After Tax', c.grossAfterTax, 'subtotal')}
+        ${row('Salary Advance', c.advance)}
+        ${row('HELB Loan', c.helb)}
+        ${row(otherName, c.otherDeductions)}
+        ${row('Total After-Tax Deductions', c.totalAfTax, 'subtotal')}
+      </div>
+      <div class="result-row net-pay">
+        <span>NET PAY</span>
+        <span style="font-family:var(--font-mono);font-size:17px;">${fmtKES(c.netPay)}</span>
+      </div>
+    </div>`;
+  }
+
+  window.viewSlip = (id) => {
+    const rec = payrollRecords.find(p => p.id === id);
+    if (!rec) return;
+    const liveEmp = employees.find(e => e.id === rec.employeeId);
+    const emp = {
+      name: rec.employeeName, title: rec.title, email: rec.email || (liveEmp?.email || ''),
+      dept: rec.dept, idNum: rec.idNum || (liveEmp?.idNum || ''),
+      kra: rec.kra || (liveEmp?.kra || ''), nssfNum: rec.nssfNum || (liveEmp?.nssfNum || ''),
+      nhifNum: rec.nhifNum || (liveEmp?.nhifNum || ''), bank: rec.bank || (liveEmp?.bank || ''),
+      account: rec.account || (liveEmp?.account || ''), payMode: rec.payMode || (liveEmp?.payMode || 'Bank Transfer'),
+      location: rec.location || (liveEmp?.location || 'Nairobi'), code: rec.code || (liveEmp?.code || ''),
+      bonusName: rec.bonusName, otherDeductionsName: rec.otherDeductionsName
+    };
+    showPayslip(emp, rec, rec.month, rec.year);
+  };
+
+  window.editPayroll = (id) => {
+    const rec = payrollRecords.find(p => p.id === id);
+    if (!rec) return;
+    editingPayrollId = id;
+    document.getElementById('py-emp').value = rec.employeeId;
+    document.getElementById('py-month').value = rec.month;
+    document.getElementById('py-year').value = rec.year;
+    document.getElementById('py-ot').value = rec.overtime || 0;
+    document.getElementById('py-bonus-name').value = rec.bonusName || 'Bonus';
+    document.getElementById('py-bonus-val').value = rec.bonus || 0;
+    document.getElementById('py-adv').value = rec.advance || 0;
+    document.getElementById('py-helb').value = rec.helb || 0;
+    document.getElementById('py-other-name').value = rec.otherDeductionsName || 'Other Deductions';
+    document.getElementById('py-other').value = rec.otherDeductions || 0;
+    document.getElementById('py-extra-inputs').style.display = 'block';
+    document.getElementById('py-result').style.display = 'none';
+    openModal('payrollModal');
+  };
+
+  window.deletePayroll = async (id) => {
+    if (!confirm('Delete this payroll record?')) return;
+    try {
+      await deleteDoc(doc(db, COLLECTIONS.COMPANIES, currentCompanyId, COLLECTIONS.PAYROLL, id));
+      toast('Record deleted.', 'info');
+    } catch (err) { toast('Error: ' + err.message, 'error'); }
+  };
+
+  // ============================================================
+  // PAYSLIPS
+  // ============================================================
+  function renderPayslips(area) {
+    area.innerHTML = `
+      <div class="action-bar">
+        <button class="btn btn-primary btn-sm" id="bulkSendBtn">Bulk Send Month's Slips</button>
+        <div class="search-box">
+          <span class="search-icon">&#128269;</span>
+          <input class="search-input" id="slipSearch" type="text" placeholder="Search payslips..." style="width:260px;">
+        </div>
+      </div>
+      <div id="slipList">${buildSlipList()}</div>
+    `;
+
+    document.getElementById('bulkSendBtn').addEventListener('click', bulkSendPayslips);
+    document.getElementById('slipSearch').addEventListener('input', e => filterSlipList(e.target.value));
+  }
+
+  function buildSlipList(filter = '') {
+    const f = filter.toLowerCase();
+    const list = payrollRecords.filter(p =>
+      !f || (p.employeeName || '').toLowerCase().includes(f) || (p.month || '').toLowerCase().includes(f)
+    );
+
+    if (!list.length) {
+      return `<div class="empty-state"><span class="es-icon">S</span><p>No payslips yet</p><small>Generate and save payroll to create payslips</small></div>`;
+    }
+
+    return list.map(p => {
+      return `
+      <div class="slip-card">
+        <div class="slip-card-left">
+          <div class="slip-avatar">${getInitials(p.employeeName)}</div>
+          <div class="slip-card-info">
+            <h4>${p.employeeName}</h4>
+            <p>${p.title || ''} &bull; <span class="badge badge-blue" style="vertical-align:middle;">${p.month} ${p.year}</span></p>
+          </div>
+        </div>
+        <div class="slip-card-right">
+          <div class="slip-net">
+            <strong>${fmtKES(p.netPay)}</strong>
+            <small>Net Pay</small>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="viewSlip('${p.id}')">View</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function filterSlipList(filter) {
+    const container = document.getElementById('slipList');
+    if (container) container.innerHTML = buildSlipList(filter);
+  }
+
+  async function bulkSendPayslips() {
+    const month = document.getElementById('py-month').value;
+    const year = parseInt(document.getElementById('py-year').value);
+    const targets = payrollRecords.filter(p => p.month === month && p.year === year);
+    if (!targets.length) { toast(`No payroll records found for ${month} ${year}`, 'error'); return; }
+    if (!confirm(`Send ${targets.length} payslips for ${month} ${year} via email?`)) return;
+    toast(`Sending ${targets.length} emails...`, 'info');
+    for (const rec of targets) {
+      await sendPayslipViaEmail(rec);
+    }
+    toast('Bulk dispatch complete!');
+  }
+
+  // ============================================================
+  // PAYSLIP PREVIEW
+  // ============================================================
+  function showPayslip(emp, calc, month, year) {
+    activeSlipData = { emp, calc, month, year };
+    document.getElementById('slipPreview').innerHTML = buildPayslipHTML(emp, calc, month, year);
+    openModal('slipModal');
+  }
+
+  function buildPayslipHTML(emp, c, month, year) {
+    const today = new Date().toLocaleDateString('en-KE', { day: '2-digit', month: 'long', year: 'numeric' });
+    const psRow = (label, amount, cls = '') => {
+      if (amount === 0 || amount === '0.00') return '';
+      return `<div class="ps-row ${cls}"><span>${label}</span><span class="ps-amount">${fmtKES(amount)}</span></div>`;
+    };
+
+    return `
+    <div class="payslip-preview">
+      <!-- Header with Logo -->
+      <div class="ps-header">
+        <div class="ps-header-content">
+          ${currentCompany?.logo ? `<img src="${currentCompany.logo}" class="ps-logo" />` : ''}
+          <div class="ps-header-text">
+            <h1 class="ps-company-name">${currentCompany?.name || 'PRINCE ALEX DIGITAL'}</h1>
+            <p class="ps-company-sub">Payroll Management System · Nairobi, Kenya</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payslip Title -->
+      <div class="ps-title-bar">
+        <h2>PAY SLIP FOR THE MONTH OF ${String(month).toUpperCase()} ${year}</h2>
+      </div>
+
+      <!-- Employee Information Card -->
+      <div class="ps-emp-card">
+        <div class="ps-emp-row">
+          <div class="ps-emp-item">
+            <span class="ps-emp-label">Employee Name</span>
+            <span class="ps-emp-value">${emp.name}</span>
+          </div>
+          <div class="ps-emp-item">
+            <span class="ps-emp-label">Job Number</span>
+            <span class="ps-emp-value">${emp.code || '—'}</span>
+          </div>
+        </div>
+        <div class="ps-emp-row">
+          <div class="ps-emp-item">
+            <span class="ps-emp-label">Job Title</span>
+            <span class="ps-emp-value">${emp.title}</span>
+          </div>
+          <div class="ps-emp-item">
+            <span class="ps-emp-label">Department / Region</span>
+            <span class="ps-emp-value">${emp.dept} / ${emp.location || 'Nairobi'}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content Grid -->
+      <div class="ps-main-grid">
+        <!-- Left Column -->
+        <div class="ps-column">
+          <!-- Earnings Section -->
+          <div class="ps-section">
+            <div class="ps-section-header ps-section-earnings">
+              <span>EARNINGS</span>
+            </div>
+            <div class="ps-section-body">
+              ${psRow('Basic Pay', c.basic)}
+              ${psRow('Telephone Allowance', c.transport)}
+              ${psRow('Bonus', c.bonus)}
+              ${psRow('Overtime (1.5x)', c.overtime * 0.5)}
+              ${psRow('Overtime (2x)', c.overtime)}
+              <div class="ps-subtotal-row">
+                <span>Gross Pay</span>
+                <span>${fmtKES(c.grossPay)}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Deductions Before Tax -->
+          <div class="ps-section">
+            <div class="ps-section-header ps-section-deductions">
+              <span>DEDUCTIONS BEFORE TAX</span>
+            </div>
+            <div class="ps-section-body">
+              ${psRow('Housing Levy (1.5%)', -c.housingLevy)}
+              ${psRow('S.H.I.F. (2.75%)', -c.shif)}
+              ${psRow('N.S.S.F.', -c.nssfTotal)}
+              <div class="ps-subtotal-row">
+                <span>Total Deductions Before Tax</span>
+                <span>${fmtKES(-c.totalBfTax)}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Taxable Pay -->
+          <div class="ps-section">
+            <div class="ps-section-header ps-section-tax">
+              <span>TAXABLE PAY</span>
+            </div>
+            <div class="ps-section-body">
+              <div class="ps-highlight-row">
+                <span>Taxable Income (Gross - Deductions)</span>
+                <span>${fmtKES(c.taxableIncome)}</span>
+              </div>
+              ${psRow('Income Tax', -c.incomeTax)}
+              <div class="ps-relief-row">
+                <span>Less: Personal Relief</span>
+                <span class="ps-relief-amount">+ ${fmtKES(c.personalRelief)}</span>
+              </div>
+              <div class="ps-subtotal-row ps-paye-row">
+                <span>P.A.Y.E.</span>
+                <span>${fmtKES(-c.paye)}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Gross Pay After Tax -->
+          <div class="ps-section">
+            <div class="ps-section-header ps-section-after-tax">
+              <span>AFTER TAX</span>
+            </div>
+            <div class="ps-section-body">
+              <div class="ps-highlight-row">
+                <span>Gross Pay After Tax</span>
+                <span>${fmtKES(c.grossAfterTax)}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Deductions After Tax -->
+          <div class="ps-section">
+            <div class="ps-section-header ps-section-deductions-after">
+              <span>DEDUCTIONS AFTER TAX</span>
+            </div>
+            <div class="ps-section-body">
+              ${psRow('Salary Advance', -c.advance)}
+              ${psRow('HELB Loan', -c.helb)}
+              <div class="ps-subtotal-row">
+                <span>Total Deductions After Tax</span>
+                <span>${fmtKES(-c.totalAfTax)}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Net Pay Highlight -->
+      <div class="ps-net-pay-card">
+        <div class="ps-net-pay-label">NET PAY</div>
+        <div class="ps-net-pay-amount">${fmtKES(c.netPay)}</div>
+      </div>
+
+      <!-- Payment Details & Personal Info -->
+      <div class="ps-footer-grid">
+        <div class="ps-footer-card">
+          <h3>Payment Details</h3>
+          <div class="ps-footer-row">
+            <span>Payment Mode:</span>
+            <span>${emp.payMode || 'Bank Transfer'}</span>
+          </div>
+          <div class="ps-footer-row">
+            <span>Bank Name:</span>
+            <span>${emp.bank || '—'}</span>
+          </div>
+          <div class="ps-footer-row">
+            <span>Bank Branch:</span>
+            <span>07105</span>
+          </div>
+          <div class="ps-footer-row">
+            <span>Account Number:</span>
+            <span>${emp.account || '—'}</span>
+          </div>
+        </div>
+        <div class="ps-footer-card">
+          <h3>Personal Information</h3>
+          <div class="ps-footer-row">
+            <span>ID Number:</span>
+            <span>${emp.idNum || '—'}</span>
+          </div>
+          <div class="ps-footer-row">
+            <span>KRA PIN:</span>
+            <span>${emp.kra || '—'}</span>
+          </div>
+          <div class="ps-footer-row">
+            <span>SHIF Number:</span>
+            <span>${emp.nhifNum || '—'}</span>
+          </div>
+          <div class="ps-footer-row">
+            <span>NSSF Number:</span>
+            <span>${emp.nssfNum || '—'}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="ps-footer">
+        <p>Generated on ${today}</p>
+      </div>
+    </div>`;
+  }
+
+  // ============================================================
+  // PDF GENERATION
+  // ============================================================
+  document.getElementById('dlPDFBtn')?.addEventListener('click', () => {
+    if (!activeSlipData) return;
+    const { emp, calc, month, year } = activeSlipData;
+    generatePayslipPDF(emp, calc, month, year);
+  });
+
+  async function generatePayslipPDF(emp, c, month, year) {
+    const pdfResult = await generatePayslipPDFInternal(emp, c, month, year);
+    if (pdfResult && pdfResult.blob) {
+      const url = URL.createObjectURL(pdfResult.blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Payslip_${(emp.name || 'Employee').replace(/\s+/g, '_')}_${month}_${year}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      toast('PDF downloaded successfully!');
+    }
+  }
+
+  async function generatePayslipPDFInternal(emp, c, month, year) {
+    const { jsPDF } = window.jspdf;
+    
+    // Use National ID as PDF password if available
+    const pdfPassword = emp.idNum || '';
+    
+    // Create PDF
+    const pdf = new jsPDF({ 
+      unit: 'mm', 
+      format: 'a4', 
+      orientation: 'portrait'
+    });
+    
+    const W = pdf.internal.pageSize.getWidth();
+    const black = [0, 0, 0];
+    const white = [255, 255, 255];
+    const grey = [230, 230, 230];
+    const lightGrey = [245, 245, 245];
+    const darkGrey = [180, 180, 180];
+
+    // Page border
+    pdf.setDrawColor(...grey); pdf.rect(10, 10, W - 20, 277, 'D');
+    
+    // Company header section
+    pdf.setFillColor(...white);
+    pdf.rect(10, 10, W - 20, 45, 'F');
+    pdf.setDrawColor(...grey); pdf.line(10, 55, W - 10, 55);
+    
+    // Company logo (if exists) - positioned at top center
+    if (currentCompany?.logo) {
+      try {
+        pdf.addImage(currentCompany.logo, 'PNG', W / 2 - 15, 14, 30, 30, undefined, 'FAST');
+      } catch (e) {
+        console.error('Error adding logo to PDF:', e);
+      }
+    }
+    
+    // Company name - positioned below logo
+    pdf.setTextColor(...black); pdf.setFontSize(16); pdf.setFont('helvetica', 'bold');
+    pdf.text(currentCompany?.name || 'PRINCE ALEX DIGITAL', W / 2, 48, { align: 'center' });
+    
+    // Title
+    pdf.setFontSize(10); pdf.setFont('helvetica', 'normal');
+    pdf.text(`Pay Slip for Month of ${month}, ${year}`, W / 2, 54, { align: 'center' });
+
+    let y = 62;
+    
+    // Employee Information Section - Two columns
+    pdf.setFontSize(9); pdf.setFont('helvetica', 'bold');
+    pdf.text('Name:', 15, y);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text(emp.name, 50, y);
+    
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Job Number:', W / 2 + 5, y);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text(emp.code || '—', W / 2 + 45, y);
+    
+    y += 6;
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Job Title:', 15, y);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text(emp.title, 50, y);
+    
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Dept. / Region:', W / 2 + 5, y);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text(`${emp.dept} / ${emp.location || 'Nairobi'}`, W / 2 + 45, y);
+    
+    y += 10;
+
+    // Horizontal line
+    pdf.setDrawColor(...grey); pdf.line(15, y, W - 15, y);
+    y += 6;
+
+    // Earnings Section
+    pdf.setFont('helvetica', 'bold'); pdf.setFontSize(10);
+    pdf.text('EARNINGS', 15, y);
+    pdf.text('KES', W - 20, y, { align: 'right' });
+    y += 6;
+    
+    const earnings = [
+      ['Basic Pay', c.basic],
+      ['Telephone', c.transport],
+      ['Bonus', c.bonus],
+      ['Overtime @1.5x (20 hours)', c.overtime * 0.5],
+      ['Overtime @2x (48 hours)', c.overtime]
+    ];
+    
+    earnings.forEach(([label, amount]) => {
+      if (amount <= 0) return; // Skip zero values
+      pdf.setFont('helvetica', 'normal'); pdf.setFontSize(9);
+      pdf.text(label, 18, y);
+      pdf.text(fmtKES(amount), W - 20, y, { align: 'right' });
+      y += 5;
+    });
+    
+    // Gross Pay
+    pdf.setFillColor(...lightGrey); pdf.rect(15, y - 3, W - 30, 6, 'F');
+    pdf.setFont('helvetica', 'bold'); pdf.setFontSize(9);
+    pdf.text('Gross Pay', 18, y);
+    pdf.text(fmtKES(c.grossPay), W - 20, y, { align: 'right' });
+    y += 10;
+
+    // Deductions Before Tax
+    pdf.setFont('helvetica', 'bold'); pdf.setFontSize(10);
+    pdf.text('DEDUCTIONS BEFORE TAX:', 15, y);
+    pdf.text('', W - 20, y, { align: 'right' });
+    y += 6;
+    
+    pdf.setFont('helvetica', 'normal'); pdf.setFontSize(9);
+    if (c.housingLevy > 0) {
+      pdf.text('Housing Levy', 18, y);
+      pdf.text(fmtKES(-c.housingLevy), W - 20, y, { align: 'right' });
+      y += 5;
+    }
+    if (c.shif > 0) {
+      pdf.text('S.H.I.F.', 18, y);
+      pdf.text(fmtKES(-c.shif), W - 20, y, { align: 'right' });
+      y += 5;
+    }
+    if (c.nssfTotal > 0) {
+      pdf.text('N.S.S.F.', 18, y);
+      pdf.text(fmtKES(-c.nssfTotal), W - 20, y, { align: 'right' });
+      y += 5;
+    }
+    
+    pdf.setFillColor(...lightGrey); pdf.rect(15, y - 3, W - 30, 6, 'F');
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Total Deductions Before Tax', 18, y);
+    pdf.text(fmtKES(-c.totalBfTax), W - 20, y, { align: 'right' });
+    y += 10;
+
+    // Taxable Pay Section
+    pdf.setFont('helvetica', 'bold'); pdf.setFontSize(10);
+    pdf.text('Taxable Pay', 15, y);
+    pdf.text(fmtKES(c.taxableIncome), W - 20, y, { align: 'right' });
+    y += 6;
+    
+    pdf.setFont('helvetica', 'normal'); pdf.setFontSize(9);
+    if (c.incomeTax > 0) {
+      pdf.text('Income Tax', 18, y);
+      pdf.text(fmtKES(-c.incomeTax), W - 20, y, { align: 'right' });
+      y += 5;
+    }
+    
+    if (c.personalRelief > 0) {
+      pdf.text('Less Personal Reliefs:', 18, y);
+      y += 5;
+      pdf.text('Tax Relief', 22, y);
+      pdf.text(fmtKES(-c.personalRelief), W - 20, y, { align: 'right' });
+      y += 5;
+    }
+    
+    pdf.setFillColor(...lightGrey); pdf.rect(15, y - 3, W - 30, 6, 'F');
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('P.A.Y.E.', 18, y);
+    pdf.text(fmtKES(-c.paye), W - 20, y, { align: 'right' });
+    y += 10;
+
+    // Gross Pay After Tax
+    pdf.setFont('helvetica', 'bold'); pdf.setFontSize(10);
+    pdf.text('Gross Pay after Tax', 15, y);
+    pdf.text(fmtKES(c.grossAfterTax), W - 20, y, { align: 'right' });
+    y += 10;
+
+    // Deductions After Tax
+    pdf.setFont('helvetica', 'bold'); pdf.setFontSize(10);
+    pdf.text('DEDUCTIONS AFTER TAX', 15, y);
+    pdf.text('', W - 20, y, { align: 'right' });
+    y += 6;
+    
+    pdf.setFont('helvetica', 'normal'); pdf.setFontSize(9);
+    if (c.advance > 0) {
+      pdf.text('Telephone Allowance Advance', 18, y);
+      pdf.text(fmtKES(-c.advance), W - 20, y, { align: 'right' });
+      y += 5;
+    }
+    if (c.helb > 0) {
+      pdf.text('HELB', 18, y);
+      pdf.text(fmtKES(-c.helb), W - 20, y, { align: 'right' });
+      y += 5;
+    }
+    if (c.otherDeductionsName && c.otherDeductions > 0) {
+      pdf.text(c.otherDeductionsName, 18, y);
+      pdf.text(fmtKES(-c.otherDeductions), W - 20, y, { align: 'right' });
+      y += 5;
+    }
+    
+    pdf.setFillColor(...lightGrey); pdf.rect(15, y - 3, W - 30, 6, 'F');
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Total Deductions After Tax', 18, y);
+    pdf.text(fmtKES(-c.totalAfTax), W - 20, y, { align: 'right' });
+    y += 12;
+
+    // Net Pay - Highlighted box
+    pdf.setFillColor(...white); pdf.rect(15, y, W - 30, 10, 'D');
+    pdf.setDrawColor(...black); pdf.setLineWidth(0.5); pdf.rect(15, y, W - 30, 10, 'D');
+    pdf.setFont('helvetica', 'bold'); pdf.setFontSize(11);
+    pdf.text('Net Pay', 18, y + 6);
+    pdf.setFontSize(13);
+    pdf.text(fmtKES(c.netPay), W - 20, y + 6, { align: 'right' });
+    y += 18;
+
+    // Personal Info Section
+    pdf.setFillColor(...lightGrey); pdf.rect(15, y, W - 30, 30, 'F');
+    pdf.setDrawColor(...grey); pdf.rect(15, y, W - 30, 30, 'D');
+    pdf.setFont('helvetica', 'bold'); pdf.setFontSize(9);
+    pdf.text('PERSONAL INFO.:', 18, y + 6);
+    
+    pdf.setFont('helvetica', 'normal'); pdf.setFontSize(8);
+    const personalInfo = [
+      ['Payment Mode:', emp.payMode || 'Bank Transfer', 'ID:', emp.idNum || '—'],
+      ['Bank Name:', emp.bank || '—', 'PIN:', emp.kra || '—'],
+      ['Bank Branch:', '07105', 'NHIF:', emp.nhifNum || '—'],
+      ['Bank Acc:', emp.account || '—', 'NSSF:', emp.nssfNum || '—']
+    ];
+    
+    personalInfo.forEach(([label1, value1, label2, value2], i) => {
+      const py = y + 12 + (i * 4.5);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text(label1, 18, py);
+      pdf.text(value1, 50, py);
+      pdf.text(label2, W / 2 + 10, py);
+      pdf.text(value2, W / 2 + 35, py);
+    });
+    
+    y += 34;
+    
+    // Footer
+    pdf.setFont('helvetica', 'italic'); pdf.setFontSize(8);
+    pdf.setTextColor(...[100, 100, 100]);
+    const today = new Date().toLocaleDateString('en-KE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    pdf.text(`CREATED:${today}`, 15, y);
+
+    // If password is provided, wrap the PDF in a password-protected ZIP archive
+    if (pdfPassword) {
+      try {
+        // Dynamically import JSZip for password-protected ZIP creation
+        const JSZip = (await import('https://cdn.jsdelivr.net/npm/jszip@3.10.1/+esm')).default;
+        const zip = new JSZip();
+        
+        // Add the PDF to the zip with password protection
+        const pdfBlob = new Blob([pdf.output('blob')], { type: 'application/pdf' });
+        const pdfArrayBuffer = await pdfBlob.arrayBuffer();
+        
+        zip.file(
+          `Payslip_${(emp.name || 'Employee').replace(/\s+/g, '_')}_${month}_${year}.pdf`,
+          pdfArrayBuffer
+        );
+        
+        // Generate the password-protected zip
+        const encryptedZipBlob = await zip.generateAsync({
+          type: 'blob',
+          password: pdfPassword,
+          encryption: 'AES256'
+        });
+        
+        return {
+          blob: encryptedZipBlob,
+          url: URL.createObjectURL(encryptedZipBlob)
+        };
+      } catch (encryptError) {
+        console.error('PDF encryption error:', encryptError);
+        // Fallback: return unencrypted PDF
+      }
+    }
+    
+    // Return unencrypted PDF
+    return {
+      blob: new Blob([pdf.output('blob')], { type: 'application/pdf' }),
+      url: pdf.output('dataurlstring')
+    };
+  }
+
+  // ============================================================
+  // EMAIL SERVICE (Cloudflare Worker)
+  // ============================================================
+  document.getElementById('sendEmailBtn')?.addEventListener('click', async () => {
+    if (!activeSlipData) return;
+    const btn = document.getElementById('sendEmailBtn');
+    btn.disabled = true; btn.textContent = 'Sending...';
+    const success = await sendPayslipViaEmail({ ...activeSlipData.calc, ...activeSlipData });
+    if (success) toast('Payslip sent successfully!');
+    else toast('Failed to send email. Please try again.', 'error');
+    btn.disabled = false; btn.textContent = 'Send via Email';
+  });
+
+  async function sendPayslipViaEmail(payrollRec) {
+    const liveEmp = employees.find(e => e.id === payrollRec.employeeId);
+    const emp = {
+      name: payrollRec.employeeName, email: payrollRec.email || (liveEmp?.email || ''),
+      title: payrollRec.title, dept: payrollRec.dept, idNum: payrollRec.idNum || (liveEmp?.idNum || ''),
+      kra: payrollRec.kra || (liveEmp?.kra || ''), nssfNum: payrollRec.nssfNum || (liveEmp?.nssfNum || ''),
+      nhifNum: payrollRec.nhifNum || (liveEmp?.nhifNum || ''), bank: payrollRec.bank || (liveEmp?.bank || ''),
+      account: payrollRec.account || (liveEmp?.account || ''), payMode: payrollRec.payMode || (liveEmp?.payMode || 'Bank Transfer'),
+      location: payrollRec.location || (liveEmp?.location || 'Nairobi'), code: payrollRec.code || (liveEmp?.code || '')
+    };
+    if (!emp.email) { console.warn(`No email for ${emp.name}`); toast('No email address for this employee.', 'error'); return false; }
+    
+    try {
+      // Generate PDF and convert to base64
+      console.log('Generating PDF for', emp.name);
+      const pdfBase64 = await getPayslipBase64(emp, payrollRec, payrollRec.month, payrollRec.year);
+      console.log('PDF generated, base64 length:', pdfBase64?.length || 0);
+      
+      if (!pdfBase64) {
+        console.error('Failed to generate PDF base64');
+        toast('Failed to generate PDF', 'error');
+        return false;
+      }
+      
+      // Import email service dynamically
+      const { sendPayslipEmail } = await import('./js/services/email-service.js');
+      console.log('Sending email to', emp.email);
+      const result = await sendPayslipEmail({
+        employeeEmail: emp.email,
+        employeeName: emp.name,
+        month: payrollRec.month,
+        year: payrollRec.year,
+        companyName: currentCompany?.name || 'Prince Alex Digital',
+        pdfBase64: pdfBase64
+      });
+      console.log('Email send result:', result);
+      return result;
+    } catch (err) {
+      console.error('Email error:', err);
+      return false;
+    }
+  }
+
+  async function getPayslipBase64(emp, c, month, year) {
+    const pdfResult = await generatePayslipPDFInternal(emp, c, month, year);
+    if (pdfResult && pdfResult.blob) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(pdfResult.blob);
+      });
+    }
+    return '';
+  }
+
+  // ============================================================
+  // REPORTS
+  // ============================================================
+  function renderReports(area) {
+    area.innerHTML = `
+      <div class="calc-card">
+        <h3>Generate Statutory Reports</h3>
+        <div class="calc-inputs" style="grid-template-columns: 1.5fr 1fr 1.5fr auto;">
+          <div class="form-group">
+            <label>Month</label>
+            <select id="rep-month"></select>
+          </div>
+          <div class="form-group">
+            <label>Year</label>
+            <input type="number" id="rep-year" value="${new Date().getFullYear()}">
+          </div>
+          <div class="form-group">
+            <label>Statutory Type</label>
+            <select id="rep-type">
+              <option value="paye">PAYE Tax (KRA)</option>
+              <option value="nssfTotal">NSSF (Total Tiers)</option>
+              <option value="shif">SHIF (Health Insurance)</option>
+              <option value="housingLevy">Affordable Housing Levy</option>
+            </select>
+          </div>
+          <div class="form-group" style="justify-content: flex-end;">
+            <button class="btn btn-primary" id="genReportBtn" style="padding: 10px 24px;">Download PDF Report</button>
+          </div>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-head">
+          <h3>Report Preview</h3>
+          <small id="rep-preview-meta" style="color: var(--text-muted);"></small>
+        </div>
+        <div id="reportPreviewTable">
+          <div class="empty-state"><span class="es-icon">R</span><p>Select criteria above to see data preview</p></div>
+        </div>
+      </div>
+    `;
+
+    const repMonth = document.getElementById('rep-month');
+    if (repMonth) {
+      repMonth.innerHTML = document.getElementById('py-month')?.innerHTML || '';
+      repMonth.addEventListener('change', refreshReportPreview);
+    }
+    document.getElementById('rep-year')?.addEventListener('input', refreshReportPreview);
+    document.getElementById('rep-type')?.addEventListener('change', refreshReportPreview);
+    document.getElementById('genReportBtn')?.addEventListener('click', generateStatutoryReport);
+  }
+
+  function refreshReportPreview() {
+    const month = document.getElementById('rep-month')?.value;
+    const year = parseInt(document.getElementById('rep-year')?.value);
+    const type = document.getElementById('rep-type')?.value;
+    const label = document.getElementById('rep-type')?.options[document.getElementById('rep-type')?.selectedIndex]?.text;
+    const data = payrollRecords.filter(p => p.month === month && p.year === year);
+    const container = document.getElementById('reportPreviewTable');
+    const meta = document.getElementById('rep-preview-meta');
+    if (!data.length) { meta.textContent = ''; container.innerHTML = `<div class="empty-state"><span class="es-icon">S</span><p>No records found for ${month} ${year}</p></div>`; return; }
+    let total = 0;
+    meta.textContent = `${data.length} records found`;
+    container.innerHTML = `
+      <table>
+        <thead><tr><th>Employee</th><th>Identification</th><th>Statutory Value</th></tr></thead>
+        <tbody>
+          ${data.map(p => {
+            const val = p[type] || 0; total += val;
+            let id = p.idNum;
+            if (type === 'paye') id = p.kra || 'No KRA';
+            if (type === 'nssfTotal') id = p.nssfNum || 'No NSSF';
+            return `<tr><td><strong>${p.employeeName}</strong></td><td><span style="font-family:var(--font-mono);font-size:12px;">${id}</span></td><td style="font-family:var(--font-mono);font-weight:600;text-align:right;">${fmtKES(val)}</td></tr>`;
+          }).join('')}
+          <tr style="background:var(--bg-2);font-weight:800;">
+            <td colspan="2" style="text-align:right;text-transform:uppercase;letter-spacing:1px;">Total ${label}</td>
+            <td style="text-align:right;color:var(--brand-primary);font-size:14px;">${fmtKES(total)}</td>
+          </tr>
+        </tbody>
+      </table>`;
+  }
+
+  function generateStatutoryReport() {
+    const month = document.getElementById('rep-month')?.value;
+    const year = parseInt(document.getElementById('rep-year')?.value);
+    const type = document.getElementById('rep-type')?.value;
+    const label = document.getElementById('rep-type')?.options[document.getElementById('rep-type')?.selectedIndex]?.text;
+    const data = payrollRecords.filter(p => p.month === month && p.year === year);
+    if (!data.length) { toast('No data to export', 'error'); return; }
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF();
+    const W = pdf.internal.pageSize.getWidth();
+    pdf.setFillColor(27, 59, 111); pdf.rect(0, 0, W, 25, 'F');
+    pdf.setTextColor(255, 255, 255); pdf.setFontSize(18);
+    pdf.text(currentCompany?.name || 'PRINCE ALEX DIGITAL', W / 2, 12, { align: 'center' });
+    pdf.setFontSize(10); pdf.text(`STATUTORY DEDUCTIONS REPORT: ${label.toUpperCase()}`, W / 2, 18, { align: 'center' });
+    pdf.setTextColor(0, 0, 0); pdf.setFontSize(11);
+    pdf.text(`Period: ${month} ${year}`, 14, 35);
+    pdf.text(`Generated: ${new Date().toLocaleDateString('en-KE')}`, W - 14, 35, { align: 'right' });
+    const headers = [['Employee Name', 'ID/PIN Number', 'Amount (KES)']];
+    const rows = data.map(p => [p.employeeName, (type === 'paye' ? p.kra : (type === 'nssfTotal' ? p.nssfNum : p.idNum)) || '—', (p[type] || 0).toLocaleString('en-KE', { minimumFractionDigits: 2 })]);
+    const total = data.reduce((s, p) => s + (p[type] || 0), 0);
+    rows.push([{ content: `TOTAL ${label.toUpperCase()}`, colSpan: 2, styles: { halign: 'right', fontStyle: 'bold' } }, { content: total.toLocaleString('en-KE', { minimumFractionDigits: 2 }), styles: { fontStyle: 'bold' } }]);
+    pdf.autoTable({ startY: 40, head: headers, body: rows, theme: 'striped', headStyles: { fillColor: [27, 59, 111] }, columnStyles: { 2: { halign: 'right' } } });
+    pdf.save(`Statutory_${label.replace(/\s+/g, '_')}_${month}_${year}.pdf`);
+    toast('Report downloaded!');
+  }
+
+  // ============================================================
+  // SETTINGS
+  // ============================================================
+  function renderSettings(area) {
+    area.innerHTML = `
+      <div class="card">
+        <div class="card-header"><h3>Company Settings</h3></div>
+        <p style="color:var(--text-muted);margin-bottom:20px;">Manage your company profile and preferences.</p>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Company Name</label>
+            <input type="text" id="s-name" value="${currentCompany?.name || ''}">
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="s-email" value="${currentCompany?.email || ''}">
+          </div>
+          <div class="form-group">
+            <label>Phone</label>
+            <input type="tel" id="s-phone" value="${currentCompany?.phone || ''}">
+          </div>
+          <div class="form-group">
+            <label>Website</label>
+            <input type="text" id="s-website" value="${currentCompany?.website || ''}">
+          </div>
+          <div class="form-group col-span-2">
+            <label>Address</label>
+            <input type="text" id="s-address" value="${currentCompany?.address || ''}">
+          </div>
+          <div class="form-divider col-span-2"><span>Statutory Information</span></div>
+          <div class="form-group"><label>KRA PIN</label><input type="text" id="s-kra" value="${currentCompany?.kraPin || ''}"></div>
+          <div class="form-group"><label>NSSF Number</label><input type="text" id="s-nssf" value="${currentCompany?.nssfNumber || ''}"></div>
+          <div class="form-group"><label>SHIF Number</label><input type="text" id="s-shif" value="${currentCompany?.shifNumber || ''}"></div>
+          <div class="form-group"><label>Housing Levy No.</label><input type="text" id="s-housing" value="${currentCompany?.housingLevyNumber || ''}"></div>
+          <div class="form-divider col-span-2"><span>Branding</span></div>
+          <div class="form-group col-span-2">
+            <label>Company Logo</label>
+            <input type="file" id="set-logo" accept="image/*" style="padding: 8px 0;">
+            <div id="logo-preview" style="margin-top: 8px; max-height: 80px; overflow: hidden; display: none;">
+              <img id="logo-preview-img" style="max-height: 80px; max-width: 200px; object-fit: contain;" />
+            </div>
+            ${currentCompany?.logo ? `<img src="${currentCompany.logo}" style="max-height: 60px; max-width: 150px; object-fit: contain; margin-top: 8px; border: 1px solid var(--border); padding: 4px; border-radius: 4px;" />` : ''}
+          </div>
+          <div class="form-group">
+            <label>Primary Color</label>
+            <input type="color" id="set-primary" value="${currentCompany?.primaryColor || '#6366F1'}">
+          </div>
+          <div class="form-group">
+            <label>Secondary Color</label>
+            <input type="color" id="set-secondary" value="${currentCompany?.secondaryColor || '#F59E0B'}">
+          </div>
+          <div class="form-group col-span-2">
+            <label>Payslip Footer</label>
+            <input type="text" id="set-footer" value="${currentCompany?.payslipFooter || 'Powered by Prince Alex Digital'}">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-primary" id="saveCompanySettings">Save Settings</button>
+        </div>
+      </div>
+    `;
+
+    // Logo preview on file select
+    document.getElementById('set-logo')?.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      const preview = document.getElementById('logo-preview');
+      const img = document.getElementById('logo-preview-img');
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          img.src = ev.target.result;
+          preview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      } else {
+        preview.style.display = 'none';
+      }
+    });
+
+    // Save settings with logo
+    document.getElementById('saveCompanySettings')?.addEventListener('click', async () => {
+      const logoFile = document.getElementById('set-logo').files[0];
+      let logoBase64 = null;
+      
+      if (logoFile) {
+        logoBase64 = await new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onload = (e) => resolve(e.target.result);
+          reader.readAsDataURL(logoFile);
+        });
+      }
+      
+      try {
+        const updateData = {
+          name: document.getElementById('s-name').value,
+          email: document.getElementById('s-email').value,
+          phone: document.getElementById('s-phone').value,
+          website: document.getElementById('s-website').value,
+          address: document.getElementById('s-address').value,
+          kraPin: document.getElementById('s-kra').value,
+          nssfNumber: document.getElementById('s-nssf').value,
+          shifNumber: document.getElementById('s-shif').value,
+          housingLevyNumber: document.getElementById('s-housing').value,
+          primaryColor: document.getElementById('set-primary').value,
+          secondaryColor: document.getElementById('set-secondary').value,
+          payslipFooter: document.getElementById('set-footer').value,
+          updatedAt: new Date().toISOString()
+        };
+        
+        if (logoBase64) {
+          updateData.logo = logoBase64;
+        }
+        
+        await updateDoc(doc(db, COLLECTIONS.COMPANIES, currentCompanyId), updateData);
+        toast('Settings saved!');
+        closeModal('settingsModal');
+      } catch (err) { toast('Error: ' + err.message, 'error'); }
+    });
+  }
+
+  // ============================================================
+  // COMPANIES (Owner)
+  // ============================================================
+  function renderCompanies(area) {
+    area.innerHTML = `
+      <div class="action-bar">
+        <button class="btn btn-primary" id="refreshCompanies">Refresh</button>
+      </div>
+      <div class="table-wrap">
+        <div class="table-head"><h3>All Companies</h3></div>
+        <div id="companiesTable"><div class="loading-state"><div class="spinner"></div> Loading companies...</div></div>
+      </div>
+    `;
+
+    loadCompaniesTable();
+    document.getElementById('refreshCompanies')?.addEventListener('click', loadCompaniesTable);
+  }
+
+  async function loadCompaniesTable() {
+    try {
+      const snap = await getDocs(collection(db, COLLECTIONS.COMPANIES));
+      const companies = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      const container = document.getElementById('companiesTable');
+      if (!companies.length) {
+        container.innerHTML = `<div class="empty-state"><span class="es-icon">C</span><p>No companies registered</p></div>`;
+        return;
+      }
+      container.innerHTML = `
+        <table>
+          <thead><tr><th>Company</th><th>Email</th><th>Status</th><th>Plan</th><th>Employees</th><th>Created</th></tr></thead>
+          <tbody>
+            ${companies.map(c => `
+              <tr>
+                <td><strong>${c.name}</strong></td>
+                <td>${c.email || '—'}</td>
+                <td><span class="badge ${c.status === 'active' ? 'badge-green' : c.status === 'trial' ? 'badge-amber' : 'badge-red'}">${c.status}</span></td>
+                <td><span class="badge badge-blue">${c.subscriptionId || 'starter'}</span></td>
+                <td>${c.employeeCount || 0}</td>
+                <td style="font-size:12px;color:var(--text-muted);">${new Date(c.createdAt).toLocaleDateString()}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>`;
+    } catch (err) { console.error(err); }
+  }
+
+  // ============================================================
+  // SUBSCRIPTIONS (Owner)
+  // ============================================================
+  function renderSubscriptions(area) {
+    area.innerHTML = `
+      <div class="table-wrap">
+        <div class="table-head"><h3>Subscription Plans</h3></div>
+        <div class="grid-4" style="padding:20px;">
+          ${['Starter', 'Professional', 'Business', 'Enterprise'].map((plan, i) => {
+            const prices = [0, 2999, 5999, 14999];
+            const features = [
+              ['Up to 10 employees', 'Basic Payroll', 'Payslip Generation', 'Email Support'],
+              ['Up to 50 employees', 'Leave Management', 'Attendance', 'Bulk Email', 'Priority Support'],
+              ['Up to 200 employees', 'Assets Management', 'Recruitment', 'Advanced Reports', 'API Access'],
+              ['Unlimited employees', 'Custom Integrations', 'SLA Guarantee', 'Account Manager', 'Training']
+            ];
+            return `
+              <div class="plan-card ${i === 2 ? 'featured' : ''}">
+                <div class="plan-name">${plan}</div>
+                <div class="plan-price">KES ${prices[i].toLocaleString()}<small>/mo</small></div>
+                <ul class="plan-features">
+                  ${features[i].map(f => `<li>${f}</li>`).join('')}
+                </ul>
+              </div>`;
+          }).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  // ============================================================
+  // PAYMENTS (Owner)
+  // ============================================================
+  function renderPayments(area) {
+    area.innerHTML = `
+      <div class="table-wrap">
+        <div class="table-head"><h3>Recent Payments</h3></div>
+        <div class="empty-state"><span class="es-icon">P</span><p>Payment history will appear here</p><small>Payments are recorded when companies subscribe</small></div>
+      </div>
+    `;
+  }
+
+  // ============================================================
+  // ANALYTICS (Owner)
+  // ============================================================
+  function renderAnalytics(area) {
+    area.innerHTML = `
+      <div class="cards-grid">
+        <div class="stat-card sc-blue"><div class="stat-icon">M</div><div class="stat-label">MRR</div><div class="stat-value">KES 0</div></div>
+        <div class="stat-card sc-green"><div class="stat-icon">A</div><div class="stat-label">ARR</div><div class="stat-value">KES 0</div></div>
+        <div class="stat-card sc-purple"><div class="stat-icon">E</div><div class="stat-label">Total Employees</div><div class="stat-value">0</div></div>
+        <div class="stat-card sc-amber"><div class="stat-icon">C</div><div class="stat-label">Active Companies</div><div class="stat-value">0</div></div>
+      </div>
+      <div class="empty-state"><span class="es-icon">A</span><p>Analytics dashboard with detailed charts coming soon</p></div>
+    `;
+  }
+
+  // ============================================================
+  // AUDIT LOGS (Owner)
+  // ============================================================
+  function renderAuditLogs(area) {
+    area.innerHTML = `
+      <div class="table-wrap">
+        <div class="table-head"><h3>Audit Logs</h3></div>
+        <div id="auditLogsTable"><div class="loading-state"><div class="spinner"></div> Loading audit logs...</div></div>
+      </div>
+    `;
+    loadAuditLogs();
+  }
+
+  async function loadAuditLogs() {
+    try {
+      const q = query(collection(db, COLLECTIONS.AUDIT_LOGS), orderBy('timestamp', 'desc'), limit(100));
+      const snap = await getDocs(q);
+      const logs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      const container = document.getElementById('auditLogsTable');
+      if (!logs.length) {
+        container.innerHTML = `<div class="empty-state"><span class="es-icon">L</span><p>No audit logs yet</p></div>`;
+        return;
+      }
+      container.innerHTML = `
+        <table>
+          <thead><tr><th>Time</th><th>User</th><th>Action</th><th>Details</th></tr></thead>
+          <tbody>
+            ${logs.map(l => `
+              <tr>
+                <td style="font-size:12px;color:var(--text-muted);font-family:var(--font-mono);">${new Date(l.timestamp).toLocaleString()}</td>
+                <td>${l.userEmail || '—'}</td>
+                <td><span class="badge badge-blue">${l.action}</span></td>
+                <td style="font-size:12px;color:var(--text-3);">${l.details || '—'}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>`;
+    } catch (err) { console.error(err); }
+  }
+
+  // ============================================================
+  // EMPLOYEE PORTAL
+  // ============================================================
+  function renderProfile(area) {
+    const emp = employees.find(e => e.email === currentUser?.email) || {};
+    area.innerHTML = `
+      <div class="emp-profile-header">
+        <div class="emp-avatar-lg">${getInitials(emp.name || currentUser?.email || 'U')}</div>
+        <div>
+          <h2 style="font-size:22px;font-weight:700;">${emp.name || 'Employee'}</h2>
+          <p style="color:var(--text-muted);">${emp.title || '—'} · ${emp.dept || '—'}</p>
+          <p style="font-size:12px;color:var(--text-3);margin-top:4px;">${emp.email || currentUser?.email}</p>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header"><h3>Personal Details</h3></div>
+          <div style="display:grid;gap:8px;">
+            <div><strong style="font-size:12px;color:var(--text-3);">ID Number:</strong> <span>${emp.idNum || '—'}</span></div>
+            <div><strong style="font-size:12px;color:var(--text-3);">KRA PIN:</strong> <span>${emp.kra || '—'}</span></div>
+            <div><strong style="font-size:12px;color:var(--text-3);">NSSF:</strong> <span>${emp.nssfNum || '—'}</span></div>
+            <div><strong style="font-size:12px;color:var(--text-3);">SHIF:</strong> <span>${emp.nhifNum || '—'}</span></div>
+            <div><strong style="font-size:12px;color:var(--text-3);">Phone:</strong> <span>${emp.phone || '—'}</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h3>Employment Details</h3></div>
+          <div style="display:grid;gap:8px;">
+            <div><strong style="font-size:12px;color:var(--text-3);">Employee Code:</strong> <span>${emp.code || '—'}</span></div>
+            <div><strong style="font-size:12px;color:var(--text-3);">Department:</strong> <span>${emp.dept || '—'}</span></div>
+            <div><strong style="font-size:12px;color:var(--text-3);">Branch:</strong> <span>${emp.branch || '—'}</span></div>
+            <div><strong style="font-size:12px;color:var(--text-3);">Type:</strong> <span>${emp.employmentType || '—'}</span></div>
+            <div><strong style="font-size:12px;color:var(--text-3);">Date Hired:</strong> <span>${emp.dateHired || '—'}</span></div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderMyPayslips(area) {
+    const emp = employees.find(e => e.email === currentUser?.email);
+    const mySlips = payrollRecords.filter(p => p.employeeId === emp?.id);
+    area.innerHTML = `
+      <div class="table-wrap">
+        <div class="table-head"><h3>My Payslips</h3></div>
+        <div id="mySlipsList">
+          ${mySlips.length ? mySlips.map(p => `
+            <div class="slip-card">
+              <div class="slip-card-left">
+                <div class="slip-avatar">${getInitials(p.employeeName)}</div>
+                <div class="slip-card-info">
+                  <h4>${p.month} ${p.year}</h4>
+                  <p>${p.title || ''}</p>
+                </div>
+              </div>
+              <div class="slip-card-right">
+                <div class="slip-net">
+                  <strong>${fmtKES(p.netPay)}</strong>
+                  <small>Net Pay</small>
+                </div>
+                <button class="btn btn-primary btn-sm" onclick="viewSlip('${p.id}')">View</button>
+              </div>
+            </div>
+          `).join('') : `<div class="empty-state"><span class="es-icon">S</span><p>No payslips available</p></div>`}
+        </div>
+      </div>
+    `;
+  }
+
+  function renderTaxSummary(area) {
+    const emp = employees.find(e => e.email === currentUser?.email);
+    const mySlips = payrollRecords.filter(p => p.employeeId === emp?.id);
+    const totalPAYE = mySlips.reduce((s, p) => s + (p.paye || 0), 0);
+    const totalNSSF = mySlips.reduce((s, p) => s + (p.nssfTotal || 0), 0);
+    const totalSHIF = mySlips.reduce((s, p) => s + (p.shif || 0), 0);
+    const totalHousing = mySlips.reduce((s, p) => s + (p.housingLevy || 0), 0);
+
+    area.innerHTML = `
+      <div class="cards-grid">
+        <div class="stat-card sc-red"><div class="stat-icon">T</div><div class="stat-label">Total PAYE</div><div class="stat-value">${fmtKES(totalPAYE)}</div></div>
+        <div class="stat-card sc-blue"><div class="stat-icon">N</div><div class="stat-label">Total NSSF</div><div class="stat-value">${fmtKES(totalNSSF)}</div></div>
+        <div class="stat-card sc-green"><div class="stat-icon">S</div><div class="stat-label">Total SHIF</div><div class="stat-value">${fmtKES(totalSHIF)}</div></div>
+        <div class="stat-card sc-amber"><div class="stat-icon">H</div><div class="stat-label">Housing Levy</div><div class="stat-value">${fmtKES(totalHousing)}</div></div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-head"><h3>Tax History</h3></div>
+        ${mySlips.length ? `
+          <table>
+            <thead><tr><th>Period</th><th>Gross Pay</th><th>PAYE</th><th>NSSF</th><th>SHIF</th><th>Housing Levy</th><th>Net Pay</th></tr></thead>
+            <tbody>
+              ${mySlips.map(p => `
+                <tr>
+                  <td><span class="badge badge-blue">${p.month} ${p.year}</span></td>
+                  <td style="font-family:var(--font-mono);">${fmtKES(p.grossPay)}</td>
+                  <td style="font-family:var(--font-mono);color:var(--danger);">${fmtKES(p.paye)}</td>
+                  <td style="font-family:var(--font-mono);">${fmtKES(p.nssfTotal)}</td>
+                  <td style="font-family:var(--font-mono);">${fmtKES(p.shif)}</td>
+                  <td style="font-family:var(--font-mono);">${fmtKES(p.housingLevy)}</td>
+                  <td style="font-family:var(--font-mono);font-weight:700;color:var(--success);">${fmtKES(p.netPay)}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        ` : `<div class="empty-state"><span class="es-icon">T</span><p>No tax data available</p></div>`}
+      </div>
+    `;
+  }
+
+  // ============================================================
+  // EMPLOYEE DASHBOARD
+  // ============================================================
+  function renderEmployeeDashboard(area) {
+    const emp = employees.find(e => e.email === currentUser?.email);
+    const mySlips = payrollRecords.filter(p => p.employeeId === emp?.id);
+    const latestSlip = mySlips[mySlips.length - 1];
+
+    area.innerHTML = `
+      <div class="emp-profile-header">
+        <div class="emp-avatar-lg">${getInitials(emp?.name || 'U')}</div>
+        <div>
+          <h2 style="font-size:22px;font-weight:700;">Welcome, ${emp?.name || 'Employee'}</h2>
+          <p style="color:var(--text-muted);">${emp?.title || '—'} · ${emp?.dept || '—'}</p>
+        </div>
+      </div>
+      <div class="cards-grid">
+        <div class="stat-card sc-green">
+          <div class="stat-icon">P</div>
+          <div class="stat-label">Latest Net Pay</div>
+          <div class="stat-value">${latestSlip ? fmtKES(latestSlip.netPay) : 'KES 0'}</div>
+          <div class="stat-sub">${latestSlip ? `${latestSlip.month} ${latestSlip.year}` : 'No records'}</div>
+        </div>
+        <div class="stat-card sc-blue">
+          <div class="stat-icon">S</div>
+          <div class="stat-label">Total Payslips</div>
+          <div class="stat-value">${mySlips.length}</div>
+          <div class="stat-sub">Available for download</div>
+        </div>
+        <div class="stat-card sc-amber">
+          <div class="stat-icon">G</div>
+          <div class="stat-label">YTD Gross Pay</div>
+          <div class="stat-value">${fmtKES(mySlips.reduce((s, p) => s + (p.grossPay || 0), 0))}</div>
+          <div class="stat-sub">Year to date</div>
+        </div>
+        <div class="stat-card sc-red">
+          <div class="stat-icon">D</div>
+          <div class="stat-label">YTD Deductions</div>
+          <div class="stat-value">${fmtKES(mySlips.reduce((s, p) => s + (p.paye || 0) + (p.nssfTotal || 0) + (p.shif || 0) + (p.housingLevy || 0), 0))}</div>
+          <div class="stat-sub">Total tax & deductions</div>
+        </div>
+      </div>
+      <div class="quick-actions">
+        <div class="quick-action" onclick="navigate('my-payslips')"><span class="qa-icon">S</span><span class="qa-label">My Payslips</span></div>
+        <div class="quick-action" onclick="navigate('tax-summary')"><span class="qa-icon">T</span><span class="qa-label">Tax Summary</span></div>
+        <div class="quick-action" onclick="navigate('profile')"><span class="qa-icon">P</span><span class="qa-label">My Profile</span></div>
+      </div>
+    `;
+  }
+
+  // ============================================================
+  // USERS MANAGEMENT
+  // ============================================================
+  let companyUsers = [];
+
+  function renderUsers(area) {
+    area.innerHTML = `
+      <div class="action-bar">
+        <button class="btn btn-primary" id="inviteUserBtn">Invite User</button>
+      </div>
+      <div class="table-wrap">
+        <div class="table-head">
+          <h3>Company Users</h3>
+          <span id="user-count" style="font-size:12px;color:var(--text-muted);">${companyUsers.length} users</span>
+        </div>
+        <div id="usersTable">${buildUsersTable()}</div>
+      </div>
+    `;
+
+    document.getElementById('inviteUserBtn').addEventListener('click', () => {
+      document.getElementById('user-name').value = '';
+      document.getElementById('user-email').value = '';
+      document.getElementById('user-role').value = 'admin';
+      openModal('userModal');
+    });
+
+    document.getElementById('saveUserBtn')?.addEventListener('click', saveUser);
+    loadCompanyUsers();
+  }
+
+  function buildUsersTable() {
+    if (!companyUsers.length) {
+      return `<div class="empty-state"><span class="es-icon">U</span><p>No users invited yet</p><small>Invite team members to collaborate on payroll</small></div>`;
+    }
+
+    const roleLabels = {
+      admin: 'Administrator',
+      hr: 'HR Manager',
+      finance: 'Finance',
+      payroll_officer: 'Payroll Officer',
+      manager: 'Manager',
+      employee: 'Employee'
+    };
+
+    return `
+      <table>
+        <thead><tr>
+          <th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Added</th>
+        </tr></thead>
+        <tbody>
+          ${companyUsers.map(u => `
+            <tr>
+              <td><div style="display:flex;align-items:center;gap:10px;">
+                <div class="avatar" style="background:linear-gradient(135deg,#10B981,#059669);width:32px;height:32px;font-size:12px;">${getInitials(u.name)}</div>
+                <strong>${u.name}</strong>
+              </div></td>
+              <td style="font-size:13px;color:var(--text-2);">${u.email}</td>
+              <td><span class="badge badge-blue">${roleLabels[u.role] || u.role}</span></td>
+              <td><span class="badge ${u.status === 'active' ? 'badge-green' : 'badge-amber'}">${u.status || 'invited'}</span></td>
+              <td style="font-size:12px;color:var(--text-muted);">${u.createdAt ? new Date(u.createdAt).toLocaleDateString() : '—'}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>`;
+  }
+
+  async function loadCompanyUsers() {
+    if (!currentCompanyId || currentCompanyId === 'system') return;
+    try {
+      const q = query(
+        collection(db, COLLECTIONS.COMPANY_USERS),
+        where('companyId', '==', currentCompanyId),
+        orderBy('createdAt', 'desc')
+      );
+      const snap = await getDocs(q);
+      companyUsers = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      const container = document.getElementById('usersTable');
+      if (container) {
+        container.innerHTML = buildUsersTable();
+      }
+      const count = document.getElementById('user-count');
+      if (count) count.textContent = `${companyUsers.length} users`;
+    } catch (err) {
+      console.error('Error loading users:', err);
+    }
+  }
+
+  function generateTempPassword() {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$';
+    let pwd = '';
+    for (let i = 0; i < 12; i++) {
+      pwd += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return pwd;
+  }
+
+  async function saveUser() {
+    const name = document.getElementById('user-name').value.trim();
+    const email = document.getElementById('user-email').value.trim();
+    const role = document.getElementById('user-role').value;
+    const btn = document.getElementById('saveUserBtn');
+
+    if (!name || !email) {
+      toast('Please enter a name and email address.', 'error');
+      return;
+    }
+
+    if (!currentCompanyId) {
+      toast('No company selected.', 'error');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Creating account...';
+
+    try {
+      // Check if user already exists for this company
+      const existingQ = query(
+        collection(db, COLLECTIONS.COMPANY_USERS),
+        where('companyId', '==', currentCompanyId),
+        where('email', '==', email.toLowerCase()),
+        limit(1)
+      );
+      const existingSnap = await getDocs(existingQ);
+      if (!existingSnap.empty) {
+        toast('A user with this email is already invited to this company.', 'error');
+        btn.disabled = false;
+        btn.textContent = 'Send Invitation';
+        return;
+      }
+
+      // Check if Firebase Auth account already exists
+      let userUid = null;
+      let tempPassword = generateTempPassword();
+      let accountCreated = false;
+
+      try {
+        // Set flag to prevent auth observer from routing during user creation
+        skipAuthRouting = true;
+        
+        // Try to create Firebase Auth account
+        const userCred = await createUserWithEmailAndPassword(auth, email.toLowerCase(), tempPassword);
+        userUid = userCred.user.uid;
+        accountCreated = true;
+        
+        // IMMEDIATELY sign out the newly created user to prevent auto-login
+        // This must happen right after creation before the auth state observer can trigger
+        try {
+          await signOut(auth);
+          // Wait longer for auth state to fully reset and observer to complete
+          await new Promise(resolve => setTimeout(resolve, 500));
+        } catch (signOutErr) {
+          console.error('Sign out error:', signOutErr);
+        }
+      } catch (authErr) {
+        if (authErr.code === 'auth/email-already-in-use') {
+          // User already has an account - try to find their UID
+          toast('This email already has an account. They will be linked to your company.', 'info');
+          // We'll still create the company user record
+        } else {
+          throw authErr;
+        }
+      } finally {
+        // Keep flag true longer to ensure all auth state changes are complete
+        await new Promise(resolve => setTimeout(resolve, 300));
+        skipAuthRouting = false;
+      }
+
+      // Create user document in Firestore users collection
+      if (userUid) {
+        await setDoc(doc(db, COLLECTIONS.USERS, userUid), {
+          uid: userUid,
+          name: name,
+          email: email.toLowerCase(),
+          role: role,
+          companyId: currentCompanyId,
+          status: 'active',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        });
+      }
+
+      // Create company user record
+      const userData = {
+        name,
+        email: email.toLowerCase(),
+        role,
+        companyId: currentCompanyId,
+        companyName: currentCompany?.name || '',
+        uid: userUid || '',
+        status: accountCreated ? 'active' : 'invited',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+
+      await addDoc(collection(db, COLLECTIONS.COMPANY_USERS), userData);
+
+      // Send invitation email (no password - guide to reset password)
+      let emailSent = false;
+      let emailError = null;
+      try {
+        console.log('Attempting to send email to:', email.toLowerCase());
+        const { sendUserInviteEmail } = await import('./js/services/email-service.js');
+        console.log('Email service loaded, sending invite...');
+        emailSent = await sendUserInviteEmail({
+          email: email.toLowerCase(),
+          name,
+          companyName: currentCompany?.name || '',
+          role,
+          invitedBy: document.getElementById('sidebarName')?.textContent || 'Your Administrator',
+          loginEmail: email.toLowerCase()
+        });
+        console.log('Email send result:', emailSent);
+      } catch (emailErr) {
+        emailError = emailErr;
+        console.error('Email send error:', emailErr);
+      }
+
+      if (emailSent) {
+        toast(`Account created for ${name}! Login instructions sent via email.`, 'success');
+      } else {
+        const errorMsg = emailError ? ` Error: ${emailError.message}` : '';
+        toast(`Account created for ${name}! However, email delivery failed. Please share login details manually.${errorMsg}`, 'info');
+      }
+
+      closeModal('userModal');
+      loadCompanyUsers();
+    } catch (err) {
+      const friendlyMsg = getFriendlyErrorMessage(err.code, err.message);
+      toast('Failed to invite user: ' + friendlyMsg, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Send Invitation';
+    }
+  }
+
+  // ============================================================
+  // AUTHENTICATION
+  // ============================================================
+
+  // Login dark mode toggle
+  document.getElementById('loginDarkToggle')?.addEventListener('click', () => {
+    const current = document.documentElement.getAttribute('data-theme');
+    const target = current === 'light' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', target);
+    localStorage.setItem('pad-payroll-theme', target);
+    document.getElementById('loginDarkToggle').textContent = target === 'dark' ? '☀️' : '🌙';
+  });
+
+  // Sync login dark toggle with main dark toggle
+  const initialTheme = localStorage.getItem('pad-payroll-theme') || 'light';
+  const loginToggle = document.getElementById('loginDarkToggle');
+  if (loginToggle) {
+    loginToggle.textContent = initialTheme === 'dark' ? '☀️' : '🌙';
+  }
+
+  document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('login-email').value;
+    const pass = document.getElementById('login-password').value;
+    const btn = document.getElementById('loginSubmitBtn');
+    btn.disabled = true; btn.textContent = 'Signing in...';
+    try {
+      await signInWithEmailAndPassword(auth, email, pass);
+      // Auth state observer will handle the rest
+    } catch (err) {
+      const friendlyMsg = getFriendlyErrorMessage(err.code, err.message);
+      toast(friendlyMsg, 'error');
+      btn.disabled = false; btn.textContent = 'Sign In';
+    }
+  });
+
+  document.getElementById('googleLoginBtn')?.addEventListener('click', async () => {
+    try { 
+      await signInWithPopup(auth, googleProvider);
+      // Auth state observer will handle the rest
+    }
+    catch (err) { toast(getFriendlyErrorMessage(err.code, 'Google login failed. Please try again.'), 'error'); }
+  });
+
+  document.getElementById('registerBtn')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    document.getElementById('loginView').style.display = 'none';
+    document.getElementById('registerView').style.display = 'block';
+  });
+
+  document.getElementById('toLoginFromRegister')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    document.getElementById('registerView').style.display = 'none';
+    document.getElementById('loginView').style.display = 'block';
+  });
+
+  document.getElementById('registerForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const companyName = document.getElementById('reg-company').value;
+    const name = document.getElementById('reg-name').value;
+    const email = document.getElementById('reg-email').value;
+    const phone = document.getElementById('reg-phone').value;
+    const password = document.getElementById('reg-password').value;
+    
+    const btn = e.target.querySelector('button');
+    btn.disabled = true;
+    btn.textContent = 'Creating account...';
+    
+    try {
+      const userCred = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCred.user;
+      
+      const companyRef = await addDoc(collection(db, COLLECTIONS.COMPANIES), {
+        name: companyName, email, phone,
+        ownerId: user.uid, ownerEmail: email,
+        status: 'active', subscriptionId: 'starter',
+        subscriptionStatus: 'trial',
+        trialEndsAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
+        employeeCount: 0, currency: 'KES', timezone: 'Africa/Nairobi',
+        createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
+      });
+      
+      // Create user document with admin role
+      await setDoc(doc(db, COLLECTIONS.USERS, user.uid), {
+        uid: user.uid,
+        name: name,
+        email: email,
+        role: ROLES.ADMIN,
+        companyId: companyRef.id,
+        status: 'active',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      });
+      
+      await setDoc(doc(db, COLLECTIONS.SETTINGS, companyRef.id), {
+        companyId: companyRef.id, payslipFooter: 'Powered by Prince Alex Digital',
+        theme: 'light', createdAt: new Date().toISOString()
+      });
+      
+      // Send welcome email to the new user
+      try {
+        const { sendWelcomeEmail } = await import('./js/services/email-service.js');
+        await sendWelcomeEmail({
+          name: name,
+          email: email,
+          companyName: companyName
+        });
+        console.log('Welcome email sent to', email);
+      } catch (emailErr) {
+        console.error('Failed to send welcome email:', emailErr);
+        // Non-blocking - don't stop registration if email fails
+      }
+      
+      toast(getFriendlySuccessMessage('company_register'), 'success');
+      // Show success message for 15 seconds before redirecting to login
+      await new Promise(resolve => setTimeout(resolve, 15000));
+      document.getElementById('registerView').style.display = 'none';
+      document.getElementById('loginView').style.display = 'block';
+      document.getElementById('login-email').value = email;
+      
+    } catch (err) {
+      const friendlyMsg = getFriendlyErrorMessage(err.code, err.message);
+      toast('Registration failed: ' + friendlyMsg, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Create Account';
+    }
+  });
+
+  // ============================================================
+  // VIEW SWITCHING (Login/Reset views)
+  // ============================================================
+  document.getElementById('toResetBtn').onclick = (e) => {
+    e.preventDefault();
+    document.getElementById('loginView').style.display = 'none';
+    document.getElementById('resetView').style.display = 'block';
+  };
+
+  document.getElementById('toLoginBtn').onclick = (e) => {
+    e.preventDefault();
+    document.getElementById('resetView').style.display = 'none';
+    document.getElementById('loginView').style.display = 'block';
+  };
+
+  document.getElementById('resetForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('reset-email').value.trim();
+    const btn = e.target.querySelector('button');
+    btn.disabled = true;
+    btn.textContent = 'Verifying email...';
+
+    try {
+      // Check if email exists in any company profile (users, companyUsers, or employees)
+      let emailExists = false;
+
+      // Check in users collection
+      const usersQ = query(collection(db, COLLECTIONS.USERS), where('email', '==', email), limit(1));
+      const usersSnap = await getDocs(usersQ);
+      if (!usersSnap.empty) emailExists = true;
+
+      // Check in companyUsers collection
+      if (!emailExists) {
+        const companyUsersQ = query(collection(db, COLLECTIONS.COMPANY_USERS), where('email', '==', email), limit(1));
+        const companyUsersSnap = await getDocs(companyUsersQ);
+        if (!companyUsersSnap.empty) emailExists = true;
+      }
+
+      // Check in employees collection across all companies
+      if (!emailExists) {
+        const companiesSnap = await getDocs(collection(db, COLLECTIONS.COMPANIES));
+        for (const companyDoc of companiesSnap.docs) {
+          const empQ = query(
+            collection(db, COLLECTIONS.COMPANIES, companyDoc.id, COLLECTIONS.EMPLOYEES),
+            where('email', '==', email),
+            limit(1)
+          );
+          const empSnap = await getDocs(empQ);
+          if (!empSnap.empty) {
+            emailExists = true;
+            break;
+          }
+        }
+      }
+
+      if (!emailExists) {
+        toast('This email is not registered in our system. Please contact your administrator or sign up for a new account.', 'error');
+        btn.disabled = false;
+        btn.textContent = 'Send Reset Link';
+        return;
+      }
+
+      // Email exists, send reset link
+      btn.textContent = 'Sending link...';
+      await sendPasswordResetEmail(auth, email);
+      toast('Reset email sent! Please check your inbox.', 'success');
+      document.getElementById('toLoginBtn').click();
+    } catch (err) {
+      toast('Error: ' + err.message, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Send Reset Link';
+    }
+  });
+
+  // ============================================================
+  // AUTH STATE OBSERVER - ROLE-BASED ROUTING
+  // ============================================================
+  onAuthStateChanged(auth, async user => {
+    const loginSec = document.getElementById('loginSection');
+    const appCont = document.getElementById('appContainer');
+    const loadingScreen = document.getElementById('loadingScreen');
+    currentUser = user;
+
+    // Skip routing if we're in the middle of creating a user
+    if (skipAuthRouting) {
+      console.log('Skipping auth routing - user creation in progress');
+      // Sign out immediately if this is a new user creation
+      if (user) {
+        try {
+          await signOut(auth);
+        } catch (e) {
+          console.error('Error signing out during user creation:', e);
+        }
+      }
+      return;
+    }
+
+    if (user) {
+      // Show loading screen
+      loadingScreen.classList.add('visible');
+      
+      try {
+        // Read user role from Firestore users collection
+        const userDoc = await getDoc(doc(db, COLLECTIONS.USERS, user.uid));
+        let userData = null;
+        
+        if (userDoc.exists()) {
+          userData = userDoc.data();
+          currentUserRole = userData.role || ROLES.ADMIN;
+          currentCompanyId = userData.companyId || null;
+        } else {
+          // User document doesn't exist - create default admin user
+          // This handles legacy users or first-time login
+          currentUserRole = ROLES.ADMIN;
+          currentCompanyId = null;
+        }
+        
+        // Update sidebar with user info
+        const email = user.email || '';
+        const userName = userData?.name || email.split('@')[0];
+        document.getElementById('sidebarName').textContent = userName;
+        document.getElementById('sidebarRole').textContent = getRoleLabel(currentUserRole);
+        document.getElementById('sidebarAvatar').textContent = getInitials(userName);
+        
+        // Route based on role
+        if (currentUserRole === ROLES.SYSTEM_OWNER) {
+          // System owner - no company needed
+          currentCompanyId = 'system';
+          buildNavigation(currentUserRole);
+          navigate('dashboard');
+        } else if (currentUserRole === ROLES.EMPLOYEE) {
+          // Employee - find their company
+          buildNavigation(currentUserRole);
+          await findUserCompany(user);
+        } else {
+          // Admin/HR/Finance/Payroll/Manager - find their company
+          buildNavigation(currentUserRole);
+          await findUserCompany(user);
+        }
+        
+        // Hide loading screen and show app
+        setTimeout(() => {
+          loadingScreen.classList.remove('visible');
+          loginSec.style.display = 'none';
+          appCont.style.display = 'block';
+          toast(getFriendlySuccessMessage('login_success'));
+        }, 1500);
+        
+      } catch (err) {
+        console.error('Auth error:', err);
+        toast(getFriendlyErrorMessage(err.code, 'Failed to load user profile. Please try again.'), 'error');
+        loadingScreen.classList.remove('visible');
+      }
+      
+    } else {
+      // User logged out
+      loginSec.style.display = 'flex';
+      appCont.style.display = 'none';
+      
+      // Cleanup listeners
+      unsubscribers.forEach(u => {
+        if (typeof u === 'function') {
+          try { u(); } catch(e) {}
+        }
+      });
+      unsubscribers = [];
+      employees = [];
+      payrollRecords = [];
+      currentCompany = null;
+      currentCompanyId = null;
+      currentUserRole = ROLES.ADMIN;
+    }
+  });
+
+  // Helper to get role label
+  function getRoleLabel(role) {
+    const labels = {
+      [ROLES.SYSTEM_OWNER]: 'System Owner',
+      [ROLES.ADMIN]: 'Administrator',
+      [ROLES.HR]: 'HR Manager',
+      [ROLES.FINANCE]: 'Finance',
+      [ROLES.PAYROLL_OFFICER]: 'Payroll Officer',
+      [ROLES.MANAGER]: 'Manager',
+      [ROLES.EMPLOYEE]: 'Employee'
+    };
+    return labels[role] || 'User';
+  }
+
+  // ============================================================
+  // FIND USER COMPANY
+  // ============================================================
+  async function findUserCompany(user) {
+    try {
+      // Query companies where user is owner
+      const q = query(collection(db, COLLECTIONS.COMPANIES), where('ownerId', '==', user.uid), limit(1));
+      const snap = await getDocs(q);
+      
+      if (!snap.empty) {
+        const company = { id: snap.docs[0].id, ...snap.docs[0].data() };
+        currentCompany = company;
+        currentCompanyId = company.id;
+        
+        // Set up real-time listeners for employees and payroll
+        setupListeners(company.id);
+        
+        toast(`Welcome to ${company.name}`);
+        navigate('dashboard');
+      } else {
+        // Try to find company where user is a user
+        const userQ = query(collection(db, COLLECTIONS.COMPANY_USERS), where('email', '==', user.email), limit(1));
+        const userSnap = await getDocs(userQ);
+        
+        if (!userSnap.empty) {
+          const userData = userSnap.docs[0].data();
+          currentCompanyId = userData.companyId;
+          
+          const companySnap = await getDoc(doc(db, COLLECTIONS.COMPANIES, currentCompanyId));
+          if (companySnap.exists()) {
+            currentCompany = { id: companySnap.id, ...companySnap.data() };
+            currentUserRole = userData.role || ROLES.ADMIN;
+            setupListeners(currentCompanyId);
+            navigate('dashboard');
+          }
+        } else if (selectedPortal === 'employee') {
+          // Employee: find by email match in employees collection
+          const companiesSnap = await getDocs(collection(db, COLLECTIONS.COMPANIES));
+          for (const cDoc of companiesSnap.docs) {
+            const empQuery = query(
+              collection(db, COLLECTIONS.COMPANIES, cDoc.id, COLLECTIONS.EMPLOYEES),
+              where('email', '==', user.email),
+              limit(1)
+            );
+            const empSnap = await getDocs(empQuery);
+            if (!empSnap.empty) {
+              currentCompany = { id: cDoc.id, ...cDoc.data() };
+              currentCompanyId = cDoc.id;
+              setupListeners(cDoc.id);
+              navigate('dashboard');
+              return;
+            }
+          }
+          toast('No employee record found for your email.', 'warning');
+        } else {
+          // No company found - show empty state
+          toast('No company found. Register a new company.', 'warning');
+          navigate('dashboard');
+        }
+      }
+    } catch (err) {
+      console.error('Error finding company:', err);
+      toast('Error loading company data.', 'error');
+    }
+  }
+
+  // ============================================================
+  // SETUP REAL-TIME LISTENERS
+  // ============================================================
+  function setupListeners(companyId) {
+    // Cleanup old listeners
+    unsubscribers.forEach(u => {
+      if (typeof u === 'function') {
+        try { u(); } catch(e) {}
+      }
+    });
+    unsubscribers = [];
+
+    // Employees listener
+    const empUnsub = onSnapshot(
+      query(collection(db, COLLECTIONS.COMPANIES, companyId, COLLECTIONS.EMPLOYEES), orderBy('name')),
+      (snap) => {
+        employees = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        refreshEmployeeDropdown();
+        
+        // Update UI if on relevant sections
+        const empTable = document.getElementById('empTable');
+        if (empTable) {
+          const searchVal = document.getElementById('empSearch')?.value || '';
+          empTable.innerHTML = buildEmployeeTable(searchVal);
+        }
+        const empCount = document.getElementById('emp-count');
+        if (empCount) empCount.textContent = `${employees.length} employees`;
+        const nbEmployees = document.getElementById('nb-employees');
+        if (nbEmployees) nbEmployees.textContent = employees.length;
+      },
+      (err) => console.error('Employee listener error:', err)
+    );
+    unsubscribers.push(empUnsub);
+
+    // Payroll listener
+    const payUnsub = onSnapshot(
+      query(collection(db, COLLECTIONS.COMPANIES, companyId, COLLECTIONS.PAYROLL), orderBy('createdAt', 'desc')),
+      (snap) => {
+        payrollRecords = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        
+        // Update UI
+        const payTable = document.getElementById('payrollTable');
+        if (payTable) {
+          const searchVal = document.getElementById('payrollSearch')?.value || '';
+          payTable.innerHTML = buildPayrollTable(searchVal);
+        }
+        const slipList = document.getElementById('slipList');
+        if (slipList) {
+          const searchVal = document.getElementById('slipSearch')?.value || '';
+          slipList.innerHTML = buildSlipList(searchVal);
+        }
+        const dashRecent = document.getElementById('dash-recent');
+        if (dashRecent) dashRecent.innerHTML = buildRecentPayrollTable();
+        const nbPayslips = document.getElementById('nb-payslips');
+        if (nbPayslips) nbPayslips.textContent = payrollRecords.length;
+        
+        // Refresh dashboard stats
+        const dEmployees = document.getElementById('d-employees');
+        if (dEmployees) dEmployees.textContent = employees.length;
+        
+        const totalGross = payrollRecords.reduce((s, p) => s + (parseFloat(p.grossPay) || 0), 0);
+        const totalDed = payrollRecords.reduce((s, p) => s + (parseFloat(p.totalBfTax) || 0) + (parseFloat(p.paye) || 0) + (parseFloat(p.totalAfTax) || 0), 0);
+        const totalNet = payrollRecords.reduce((s, p) => s + (parseFloat(p.netPay) || 0), 0);
+        
+        const dGross = document.getElementById('d-gross');
+        if (dGross) dGross.textContent = fmtKES(totalGross);
+        const dDeductions = document.getElementById('d-deductions');
+        if (dDeductions) dDeductions.textContent = fmtKES(totalDed);
+        const dNet = document.getElementById('d-net');
+        if (dNet) dNet.textContent = fmtKES(totalNet);
+      },
+      (err) => console.error('Payroll listener error:', err)
+    );
+    unsubscribers.push(payUnsub);
+
+    // Company listener
+    const compUnsub = onSnapshot(
+      doc(db, COLLECTIONS.COMPANIES, companyId),
+      (snap) => {
+        if (snap.exists()) {
+          currentCompany = { id: snap.id, ...snap.data() };
+        }
+      }
+    );
+    unsubscribers.push(compUnsub);
+  }
+
+  // ============================================================
+  // SYSTEM OWNER ACCESS VERIFICATION
+  // ============================================================
+  /**
+   * Checks if the current user is an authorized system owner.
+   * System owners are defined in the systemConfig document in Firestore.
+   * If the user is not authorized, they are logged out.
+   */
+  async function checkSystemOwnerAccess(user) {
+    try {
+      // Check if the user's email is registered as a system owner
+      const configDoc = await getDoc(doc(db, COLLECTIONS.SYSTEM_CONFIG, 'owners'));
+      
+      if (configDoc.exists()) {
+        const config = configDoc.data();
+        const authorizedOwners = config.authorizedEmails || [];
+        const ownerUids = config.authorizedUids || [];
+        
+        // Check if user's email or UID is in the authorized list
+        const isAuthorized = authorizedOwners.includes(user.email) || 
+                            ownerUids.includes(user.uid);
+        
+        if (isAuthorized) {
+          currentUserRole = ROLES.SYSTEM_OWNER;
+          currentCompanyId = 'system';
+          buildNavigation(currentUserRole);
+          navigate('dashboard');
+          toast('Welcome, System Owner!', 'info');
+          return;
+        }
+      }
+      
+      // If no systemConfig document exists or user not found, show setup prompt
+      // For first-time setup: check if the user's email matches the owner email pattern
+      // or if this is the very first user
+      const companiesSnap = await getDocs(collection(db, COLLECTIONS.COMPANIES));
+      
+      if (companiesSnap.empty && !configDoc.exists()) {
+        // First user - auto-create system owner config
+        await setDoc(doc(db, COLLECTIONS.SYSTEM_CONFIG, 'owners'), {
+          authorizedEmails: [user.email],
+          authorizedUids: [user.uid],
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        });
+        
+        currentUserRole = ROLES.SYSTEM_OWNER;
+        currentCompanyId = 'system';
+        buildNavigation(currentUserRole);
+        navigate('dashboard');
+        toast('System owner account created! Welcome!', 'success');
+        return;
+      }
+      
+      // Not authorized as owner - fall back to company admin
+      toast('Access denied. You are not authorized as a System Owner.', 'error');
+      
+      // Try company admin portal instead
+      currentUserRole = ROLES.ADMIN;
+      selectedPortal = 'admin';
+      document.querySelectorAll('.portal-btn').forEach(b => b.classList.remove('active'));
+      document.querySelector('[data-portal="admin"]')?.classList.add('active');
+      buildNavigation(currentUserRole);
+      findUserCompany(user);
+      
+    } catch (err) {
+      console.error('Owner access check error:', err);
+      toast('Error verifying owner access.', 'error');
+    }
+  }
+
+  // ============================================================
+  // LOGOUT
+  // ============================================================
+  window.appLogout = () => {
+    signOut(auth);
+    toast('Signed out successfully.', 'info');
+  };
+
+  // ============================================================
+  // DARK MODE
+  // ============================================================
+  const darkBtn = document.getElementById('darkToggle');
+  const savedTheme = localStorage.getItem('pad-payroll-theme') || 'light';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  darkBtn.innerHTML = savedTheme === 'dark' ? 'Light Mode' : 'Dark Mode';
+
+  darkBtn.addEventListener('click', () => {
+    const current = document.documentElement.getAttribute('data-theme');
+    const target = current === 'light' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', target);
+    localStorage.setItem('pad-payroll-theme', target);
+    darkBtn.innerHTML = target === 'dark' ? 'Light Mode' : 'Dark Mode';
+  });
+
+  // ============================================================
+  // MOBILE MENU
+  // ============================================================
+  document.getElementById('menuBtn').addEventListener('click', () => {
+    document.getElementById('sidebar').classList.toggle('open');
+  });
+
+  // ============================================================
+  // INIT: DATE & LABELS
+  // ============================================================
+  document.getElementById('todayDate').textContent = new Date().toLocaleDateString('en-KE', {
+    weekday: 'short', day: '2-digit', month: 'short', year: 'numeric'
+  });
+
+  // Set current month/year in payroll form
+  const now = new Date();
+  const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const pyMonth = document.getElementById('py-month');
+  if (pyMonth) pyMonth.value = monthNames[now.getMonth()];
+  const pyYear = document.getElementById('py-year');
+  if (pyYear) pyYear.value = now.getFullYear();
+
+  // Live gross update listeners
+  ['em-salary', 'em-house', 'em-transport', 'em-bonus'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', updateLiveGross);
+  });
+
+  // Save employee button
+  document.getElementById('saveEmpBtn')?.addEventListener('click', saveEmployee);
+
+  // Close modals on Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
+    }
+  });
+
+  console.log('Prince Alex Digital Payroll SaaS initialized');
+  console.log(`Firebase Project: ${firebaseConfig.projectId}`);
+</script>
+</body>
+</html>
