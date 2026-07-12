@@ -181,6 +181,10 @@
       color: rgba(255,255,255,0.8);
     }
 
+    .login-mobile-actions {
+      display: none;
+    }
+
     /* ── RIGHT SIDE: Login Card ───────────────────────── */
     .login-right {
       flex: 0 0 55%;
@@ -661,19 +665,67 @@
     @media (max-width: 768px) {
       .login-split { 
         flex-direction: column; 
-        position: static; /* Allow the body to scroll */
+        position: relative;
         min-height: 100vh; 
         width: 100%;
         z-index: auto;
       }
-      .login-left { flex: none; padding: 32px 24px 24px; min-height: auto; }
-      .login-left-hero { margin-top: 32px; }
-      .login-left-hero h1 { font-size: 28px; }
+      .login-left { 
+        flex: none;
+        overflow: visible !important; 
+        padding: 24px 20px 120px; 
+        min-height: 100vh; 
+        justify-content: flex-start;
+      }
+      .login-left-hero { margin-top: 24px; }
+      .login-left-hero h1 { font-size: 24px; }
+      .login-left-hero p { font-size: 14px; }
       .login-left-features { grid-template-columns: 1fr; gap: 6px; }
       .login-left-bottom { display: none; }
-      .login-right { flex: none; padding: 24px; }
-      .login-right-inner { max-width: 100%; }
-      .login-right-top-bar { margin-bottom: 20px; }
+      .login-mobile-actions { 
+        display: block !important; 
+      }
+      .login-mobile-actions .btn {
+        width: 100%;
+        padding: 14px;
+        font-size: 15px;
+        font-weight: 700;
+        border-radius: 12px;
+      }
+      .login-mobile-actions .btn-outline {
+        border-color: rgba(255,255,255,0.3);
+        color: #fff;
+      }
+      .login-mobile-actions .btn-outline:hover {
+        background: rgba(255,255,255,0.1);
+      }
+      .login-right { 
+        display: none;
+        flex: none; 
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        padding: 0;
+        background: var(--bg);
+        z-index: 1100;
+        align-items: flex-start;
+        overflow-y: auto;
+      }
+      .login-right.mobile-open {
+        display: flex;
+      }
+      .login-right-inner { 
+        max-width: 100%; 
+        padding: 24px 20px;
+        width: 100%;
+        min-height: 100vh;
+      }
+      .login-right-top-bar { margin-bottom: 12px; }
+      #closeLoginModalBtn {
+        display: flex !important;
+      }
     }
 
     @media (max-width: 500px) {
@@ -682,6 +734,14 @@
       .login-left-hero p { font-size: 14px; }
       .login-right { padding: 20px; }
       .login-right-header h2 { font-size: 22px; }
+      .login-right {
+        display: none; /* Hide by default on mobile */
+        position: fixed;
+        inset: 0;
+        z-index: 1100;
+        background: var(--bg);
+        overflow-y: auto;
+      }
       .login-tab { font-size: 12px; padding: 8px 8px; }
       .login-bottom-bar { flex-wrap: wrap; gap: 12px; }
     }
@@ -1361,6 +1421,12 @@
             </a>
           </div>
         </div>
+
+        <div class="login-mobile-actions">
+          <button class="btn btn-primary" id="mobileLoginBtn">Sign In</button>
+          <button class="btn btn-outline" style="margin-top: 10px; border-color: rgba(255,255,255,0.3); color: #fff;" id="mobileRegisterBtn">Create Account</button>
+        </div>
+
       </div>
       <div class="login-left-bottom">
         <div class="login-left-testimonial">
@@ -1396,6 +1462,9 @@
         </div>
 
         <!-- Login View (Single Unified Login) -->
+        <button id="closeLoginModalBtn" style="position: absolute; top: 16px; right: 16px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 50%; width: 36px; height: 36px; font-size: 20px; cursor: pointer; display: none; align-items: center; justify-content: center;">&#10005;</button>
+
+
         <div id="loginView">
           <div style="text-align:center; margin-bottom: 20px;">
             <svg width="56" height="56" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-bottom: 10px;">
@@ -1581,28 +1650,6 @@
 <div class="modal-overlay" id="empModal">
   <div class="modal modal-lg">
     <div class="modal-inner">
-        <style>
-          /* Modal styles */
-          .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.5);
-            display: none; /* Hidden by default */
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            padding: 1rem;
-            overflow-y: auto;
-          }
-          .modal-overlay.open {
-            display: flex; /* Shown when .open class is added */
-          }
-          .modal-close-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-          }
-        </style>
       <div class="modal-hdr">
         <h3 id="empModalTitle">Add Employee</h3>
         <button class="modal-close-btn" data-close-modal="empModal">&#10005;</button>
@@ -1927,6 +1974,47 @@
   </div>
 </div>
 
+<!-- Company Management Modal (for Owner) -->
+<div class="modal-overlay" id="companyModal">
+  <div class="modal" style="max-width: 500px;">
+    <div class="modal-inner">
+      <div class="modal-hdr">
+        <h3 id="companyModalTitle">Create New Company</h3>
+        <button class="modal-close-btn" data-close-modal="companyModal">&#10005;</button>
+      </div>
+      <input type="hidden" id="co-id">
+      <div class="form-grid">
+        <div class="form-divider col-span-2"><span>Company Details</span></div>
+        <div class="form-group col-span-2">
+          <label>Company Name <span class="req">*</span></label>
+          <input type="text" id="co-name" placeholder="e.g. New Client Inc.">
+        </div>
+        <div class="form-divider col-span-2"><span>Administrator Account</span></div>
+        <div class="form-group">
+          <label>Admin Full Name <span class="req">*</span></label>
+          <input type="text" id="co-admin-name" placeholder="e.g. Alex Senerwa">
+        </div>
+        <div class="form-group">
+          <label>Admin Email <span class="req">*</span></label>
+          <input type="email" id="co-admin-email" placeholder="e.g. admin@client.com">
+        </div>
+        <div class="form-group col-span-2">
+          <label>Admin Password <span class="req">*</span></label>
+          <input type="text" id="co-admin-password" placeholder="A temporary password will be generated">
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-outline" onclick="closeModal('companyModal')">Cancel</button>
+        <button class="btn btn-primary" id="saveCompanyBtn">Create Company</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById('saveCompanyBtn')?.addEventListener('click', () => saveCompanyByOwner());
+</script>
+
 <!-- User Invite Modal -->
 <div class="modal-overlay" id="userModal">
   <div class="modal" style="max-width: 500px;">
@@ -1981,6 +2069,7 @@
     sendPasswordResetEmail, GoogleAuthProvider, signInWithPopup, signInWithRedirect,
     createUserWithEmailAndPassword
   } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { sendUserInviteEmail } from './js/services/email-service.js';
   
   // Google Auth Provider configuration
   const googleProvider = new GoogleAuthProvider();
@@ -3931,7 +4020,8 @@
   function renderCompanies(area) {
     area.innerHTML = `
       <div class="action-bar">
-        <button class="btn btn-primary" id="refreshCompanies">Refresh</button>
+        <button class="btn btn-primary" id="createCompanyBtn">Create Company</button>
+        <button class="btn btn-ghost" id="refreshCompanies">Refresh</button>
       </div>
       <div class="table-wrap">
         <div class="table-head"><h3>All Companies</h3></div>
@@ -3940,6 +4030,14 @@
     `;
 
     loadCompaniesTable();
+    document.getElementById('createCompanyBtn')?.addEventListener('click', () => {
+      document.getElementById('companyModalTitle').textContent = 'Create New Company';
+      document.getElementById('saveCompanyBtn').textContent = 'Create Company';
+      ['co-id', 'co-name', 'co-admin-name', 'co-admin-email'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('co-admin-password').value = generateTempPassword();
+      ['co-admin-name', 'co-admin-email', 'co-admin-password'].forEach(id => document.getElementById(id).disabled = false);
+      openModal('companyModal');
+    });
     document.getElementById('refreshCompanies')?.addEventListener('click', loadCompaniesTable);
   }
 
@@ -3954,22 +4052,156 @@
       }
       container.innerHTML = `
         <table>
-          <thead><tr><th>Company</th><th>Email</th><th>Status</th><th>Plan</th><th>Employees</th><th>Created</th></tr></thead>
+          <thead><tr><th>Company</th><th>Email</th><th>Status</th><th>Plan</th><th>Employees</th><th>Created</th><th>Actions</th></tr></thead>
           <tbody>
             ${companies.map(c => `
               <tr>
                 <td><strong>${c.name}</strong></td>
                 <td>${c.email || '—'}</td>
-                <td><span class="badge ${c.status === 'active' ? 'badge-green' : c.status === 'trial' ? 'badge-amber' : 'badge-red'}">${c.status}</span></td>
+                <td><span class="badge ${c.status === 'active' ? 'badge-green' : 'badge-red'}">${c.status || 'inactive'}</span></td>
                 <td><span class="badge badge-blue">${c.subscriptionId || 'starter'}</span></td>
                 <td>${c.employeeCount || 0}</td>
                 <td style="font-size:12px;color:var(--text-muted);">${new Date(c.createdAt).toLocaleDateString()}</td>
+                <td>
+                  <div style="display:flex;gap:6px;">
+                    <button class="btn btn-ghost btn-xs" onclick="manageCompany('${c.id}')">Manage</button>
+                    <button 
+                      class="btn btn-xs ${c.status === 'active' ? 'btn-amber' : 'btn-success'}" 
+                      onclick="toggleCompanyStatus('${c.id}', '${c.status}')">
+                      ${c.status === 'active' ? 'Deactivate' : 'Activate'}
+                    </button>
+                  </div>
+                </td>
               </tr>
             `).join('')}
           </tbody>
         </table>`;
     } catch (err) { console.error(err); }
   }
+
+  window.toggleCompanyStatus = async (companyId, currentStatus) => {
+    const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+    const action = newStatus === 'active' ? 'activate' : 'deactivate';
+    if (!confirm(`Are you sure you want to ${action} this company?`)) return;
+
+    try {
+      await updateDoc(doc(db, COLLECTIONS.COMPANIES, companyId), { status: newStatus, updatedAt: new Date().toISOString() });
+      toast(`Company has been ${action}d.`, 'success');
+      loadCompaniesTable();
+    } catch (err) {
+      toast(`Failed to ${action} company: ${err.message}`, 'error');
+    }
+  }
+
+  window.manageCompany = async (companyId) => {
+    try {
+      const companyDoc = await getDoc(doc(db, COLLECTIONS.COMPANIES, companyId));
+      if (!companyDoc.exists()) {
+        toast('Company not found.', 'error');
+        return;
+      }
+      const company = companyDoc.data();
+      document.getElementById('companyModalTitle').textContent = `Manage: ${company.name}`;
+      document.getElementById('saveCompanyBtn').textContent = 'Save Changes';
+      document.getElementById('co-id').value = companyId;
+      document.getElementById('co-name').value = company.name;
+      document.getElementById('co-admin-name').value = 'Administrator'; // Placeholder
+      document.getElementById('co-admin-email').value = company.ownerEmail;
+      document.getElementById('co-admin-password').value = '********';
+      // Disable admin fields when editing
+      ['co-admin-name', 'co-admin-email', 'co-admin-password'].forEach(id => document.getElementById(id).disabled = true);
+      openModal('companyModal');
+    } catch (err) {
+      toast('Error loading company data.', 'error');
+    }
+  };
+
+  window.deleteCompanyByOwner = async (companyId) => {
+    if (!confirm('Are you sure you want to permanently delete this company and all its data? This action cannot be undone.')) return;
+    try {
+      // This is a placeholder for a more complex deletion process.
+      // A real implementation would use a Cloud Function to delete all sub-collections.
+      await deleteDoc(doc(db, COLLECTIONS.COMPANIES, companyId));
+      await deleteDoc(doc(db, COLLECTIONS.SETTINGS, companyId));
+      toast('Company deleted successfully.', 'info');
+      loadCompaniesTable();
+    } catch (err) {
+      toast(`Error deleting company: ${err.message}`, 'error');
+    }
+  };
+
+  window.saveCompanyByOwner = async () => {
+    const companyId = document.getElementById('co-id').value;
+    const companyName = document.getElementById('co-name').value.trim();
+    const btn = document.getElementById('saveCompanyBtn');
+    btn.disabled = true;
+    btn.textContent = 'Saving...';
+
+    try {
+      if (companyId) { // Editing existing company
+        await updateDoc(doc(db, COLLECTIONS.COMPANIES, companyId), { name: companyName, updatedAt: new Date().toISOString() });
+        toast('Company updated successfully!');
+      } else { // Creating new company
+        const adminName = document.getElementById('co-admin-name').value.trim();
+        const adminEmail = document.getElementById('co-admin-email').value.trim();
+        const adminPassword = document.getElementById('co-admin-password').value.trim();
+
+        if (!companyName || !adminName || !adminEmail || !adminPassword) {
+          toast('Please fill all required fields.', 'error');
+          return;
+        }
+
+        // 1. Create Firebase Auth user
+        const userCred = await createUserWithEmailAndPassword(auth, adminEmail, adminPassword);
+        const user = userCred.user;
+
+        // 2. Create Company document
+        const companyRef = await addDoc(collection(db, COLLECTIONS.COMPANIES), {
+          name: companyName, email: adminEmail, ownerId: user.uid, ownerEmail: adminEmail,
+          status: 'active', subscriptionId: 'starter', subscriptionStatus: 'trial',
+          trialEndsAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
+          createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
+        });
+
+        // 3. Create User document
+        await setDoc(doc(db, COLLECTIONS.USERS, user.uid), {
+          uid: user.uid, name: adminName, email: adminEmail, role: ROLES.ADMIN,
+          companyId: companyRef.id, status: 'active', createdAt: new Date().toISOString()
+        });
+
+        // 4. Send invitation email to the new admin, with better error handling
+        let emailSent = false;
+        let emailError = null;
+        try {
+          emailSent = await sendUserInviteEmail({
+            email: adminEmail,
+            name: adminName,
+            companyName: companyName,
+            role: ROLES.ADMIN,
+            invitedBy: document.getElementById('sidebarName')?.textContent || 'The System Owner',
+            loginEmail: adminEmail
+          });
+        } catch (err) {
+          emailError = err;
+          console.error("Error sending invitation email:", err);
+        }
+
+        if (emailSent && !emailError) {
+          toast(`Company created! Invitation sent to ${adminEmail}.`, 'success');
+        } else {
+          toast(`Company created, but the invitation email failed to send.`, 'warning');
+        }
+
+      }
+      closeModal('companyModal');
+      loadCompaniesTable();
+    } catch (err) {
+      toast(getFriendlyErrorMessage(err.code, `Failed to save company: ${err.message}`), 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = companyId ? 'Save Changes' : 'Create Company';
+    }
+  };
 
   // ============================================================
   // SUBSCRIPTIONS (Owner)
@@ -5082,6 +5314,30 @@
       document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
     }
   });
+
+  // Mobile login modal triggers
+  const loginRight = document.querySelector('.login-right');
+  const closeLoginBtn = document.getElementById('closeLoginModalBtn');
+
+  document.getElementById('mobileLoginBtn')?.addEventListener('click', () => {
+    if (window.innerWidth <= 768) {
+      loginRight.style.display = 'flex';
+      closeLoginBtn.style.display = 'flex';
+      document.getElementById('loginView').style.display = 'block';
+      document.getElementById('registerView').style.display = 'none';
+    }
+  });
+
+  document.getElementById('mobileRegisterBtn')?.addEventListener('click', () => {
+    if (window.innerWidth <= 768) {
+      loginRight.style.display = 'flex';
+      closeLoginBtn.style.display = 'flex';
+      document.getElementById('loginView').style.display = 'none';
+      document.getElementById('registerView').style.display = 'block';
+    }
+  });
+
+  closeLoginBtn?.addEventListener('click', () => loginRight.style.display = 'none');
 
   console.log('Prince Alex Digital Payroll SaaS initialized');
   console.log(`Firebase Project: ${firebaseConfig.projectId}`);
